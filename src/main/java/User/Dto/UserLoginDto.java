@@ -1,2 +1,4 @@
-package User.Dto;public class UserLoginDto {
+package User.Dto;
+
+public class UserLoginDto {
 }

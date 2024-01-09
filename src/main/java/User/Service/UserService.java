@@ -1,2 +1,6 @@
-package User.Service;public class UserService {
+package User.Service;
+
+
+
+public interface UserService {
 }

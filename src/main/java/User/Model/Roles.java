@@ -1,2 +1,7 @@
-package User.Model;public class Roles {
-}
+package User.Model;
+
+public enum Roles {
+        ROLE_CUSTOMER,
+        ROLE_ADMIN
+    }
+
