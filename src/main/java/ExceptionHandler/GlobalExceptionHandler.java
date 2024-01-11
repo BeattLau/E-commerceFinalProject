@@ -9,13 +9,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({UserNotFoundException.class})
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.NOT_FOUND)
                 .body(exception.getMessage());
     }
     @ExceptionHandler({UserAlreadyExistsException.class})
     public ResponseEntity<Object> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.CONFLICT)
                 .body(exception.getMessage());
     }
     @ExceptionHandler({RuntimeException.class})
