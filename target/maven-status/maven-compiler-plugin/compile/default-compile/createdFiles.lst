@@ -1,0 +1,16 @@
+User/Dto/UserLoginDto.class
+User/Repository/RolesRepository.class
+User/Dto/UserRegistrationDto.class
+eCommerce/eCommerceFinalProjectApplication.class
+eCommerce/SwaggerConfig.class
+eCommerce/LoggingConfig.class
+User/Model/Roles.class
+User/Model/Permission.class
+ExceptionHandler/GlobalExceptionHandler.class
+User/Controller/UserController.class
+ExceptionHandler/UserAlreadyExistsException.class
+User/Repository/UserRepository.class
+User/Service/UserServiceImpl.class
+User/Model/User.class
+ExceptionHandler/UserNotFoundException.class
+User/Service/UserService.class
