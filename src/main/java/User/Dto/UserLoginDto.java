@@ -1,5 +1,4 @@
 package User.Dto;
-
 public class UserLoginDto {
     private String email;
     private String password;
