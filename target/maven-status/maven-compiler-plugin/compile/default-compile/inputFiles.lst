@@ -1,6 +1,7 @@
 /Users/laurabeattie/Downloads/E-commerceFinalProject/src/main/java/eCommerce/SwaggerConfig.java
 /Users/laurabeattie/Downloads/E-commerceFinalProject/src/main/java/User/Dto/UserLoginDto.java
 /Users/laurabeattie/Downloads/E-commerceFinalProject/src/main/java/ExceptionHandler/UserNotFoundException.java
+/Users/laurabeattie/Downloads/E-commerceFinalProject/src/main/java/User/Model/RoleToUserForm.java
 /Users/laurabeattie/Downloads/E-commerceFinalProject/src/main/java/eCommerce/eCommerceFinalProjectApplication.java
 /Users/laurabeattie/Downloads/E-commerceFinalProject/src/main/java/User/Dto/UserRegistrationDto.java
 /Users/laurabeattie/Downloads/E-commerceFinalProject/src/main/java/User/Repository/UserRepository.java

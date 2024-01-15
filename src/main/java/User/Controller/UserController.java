@@ -4,8 +4,7 @@ import User.Model.RoleToUserForm;
 import User.Model.Roles;
 import User.Model.User;
 import User.Dto.UserRegistrationDto;
-import User.Service.UserService;
-import lombok.Data;
+import User.Service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,19 +16,19 @@ import java.net.URI;
 import java.util.List;
 
 @RestController @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/")
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers(){
-        return ResponseEntity.ok().body(userService.getUsers());
+        return ResponseEntity.ok().body(userServiceImpl.getUsers());
     }
 
     @PostMapping("/user/save")
     public ResponseEntity<User> saveUser(@RequestBody User user) {
-        User savedUser = userService.saveUser(user);
+        User savedUser = userServiceImpl.saveUser(user);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -39,7 +38,7 @@ public class UserController {
     }
     @PostMapping("/user/role")
     public ResponseEntity<Roles> saveRole(@RequestBody Roles roles) {
-        Roles savedRole = userService.saveRoles(roles);
+        Roles savedRole = userServiceImpl.saveRoles(roles);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -47,20 +46,19 @@ public class UserController {
                 .toUri();
         return ResponseEntity.created(location).body(savedRole);
     }
-
-    @PostMapping("/user/addToUser")
+    @PostMapping("/user/addRoleToUser")
     public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm form) {
-        userService.addRoleToUser(form.getEmail(), form.getRoleName());
+        userServiceImpl.addRoleToUser(form.getEmail(), form.getRoleName());
         return ResponseEntity.ok().build();
     }
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
-        userService.registerUser(registrationDto);
+        userServiceImpl.registerUser(registrationDto);
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
     }
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserLoginDto userLoginDto){
-        userService.loginUser(userLoginDto);
+        userServiceImpl.loginUser(userLoginDto);
         return new ResponseEntity<>("User logged in successfully", HttpStatus.OK);
     }
 }
