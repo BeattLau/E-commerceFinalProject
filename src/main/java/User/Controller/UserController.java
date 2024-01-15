@@ -1,13 +1,10 @@
 package User.Controller;
-import User.Dto.UserLoginDto;
 import User.Model.RoleToUserForm;
 import User.Model.Roles;
 import User.Model.User;
-import User.Dto.UserRegistrationDto;
 import User.Service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -16,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController @RequiredArgsConstructor
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class UserController {
 
     @Autowired
@@ -50,15 +47,5 @@ public class UserController {
     public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm form) {
         userServiceImpl.addRoleToUser(form.getEmail(), form.getRoleName());
         return ResponseEntity.ok().build();
-    }
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
-        userServiceImpl.registerUser(registrationDto);
-        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
-    }
-    @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserLoginDto userLoginDto){
-        userServiceImpl.loginUser(userLoginDto);
-        return new ResponseEntity<>("User logged in successfully", HttpStatus.OK);
     }
 }
