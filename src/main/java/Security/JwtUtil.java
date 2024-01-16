@@ -3,7 +3,9 @@ package Security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -11,7 +13,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
-@Data
+@Data @AllArgsConstructor @NoArgsConstructor
 public class JwtUtil {
 
     @Value("${jwt.secret}")
@@ -19,6 +21,7 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+
 
     public String generateToken(String username) {
         return Jwts.builder()
@@ -35,7 +38,9 @@ public class JwtUtil {
     }
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        String username = extractClaim(token, Claims::getSubject);
+        System.out.println("Extracted username: " + username);
+        return username;
     }
 
     public Date extractExpiration(String token) {

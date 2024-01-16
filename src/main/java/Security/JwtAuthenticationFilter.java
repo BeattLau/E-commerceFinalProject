@@ -51,5 +51,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
 
         filterChain.doFilter(request, response);
+
     }
 }
