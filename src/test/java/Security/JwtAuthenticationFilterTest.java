@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -43,7 +46,7 @@ class JwtAuthenticationFilterTest {
         } catch (javax.servlet.ServletException e) {
             throw new RuntimeException(e);
         }
-        verify(filterChain, times(1)).doFilter(request, response);
+        verify(filterChain, times(1)).doFilter((ServletRequest) request, (ServletResponse) response);
         verify(jwtUtil, times(1)).extractUsername(anyString());
         verify(userDetailsService, times(1)).loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authenticationToken =
