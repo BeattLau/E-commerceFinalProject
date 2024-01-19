@@ -1,17 +1,17 @@
 package User.Service;
-import User.Dto.UserLoginDto;
-import User.Dto.UserRegistrationDto;
+import User.Controller.LoginRequest;
+import User.Controller.RegisterRequest;
 import User.Model.Roles;
-import User.Model.User;
+import User.Model.CustomUser;
 
 import java.util.List;
 
 public interface UserService {
-    User saveUser(User user);
+    CustomUser saveUser(CustomUser user);
     Roles saveRoles(Roles roles);
     void addRoleToUser(String email, String roleName);
-    User getUser(String Email);
-    List<User> getUsers();
-    User registerUser(UserRegistrationDto registrationDto);
-    User loginUser(UserLoginDto userLoginDto);
+    CustomUser getUser(String Email);
+    List<CustomUser> getUsers();
+    CustomUser registerUser(RegisterRequest registerRequest);
+    CustomUser loginUser(LoginRequest loginRequest);
 }

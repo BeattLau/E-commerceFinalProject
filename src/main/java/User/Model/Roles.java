@@ -17,6 +17,9 @@ public class Roles {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    private Set<CustomUser> users = new HashSet<>();
 
+    public Roles(String roleName) {
+        this.name = roleName;
+    }
 }

@@ -1,7 +1,7 @@
 package User.Controller;
 import User.Model.RoleToUserForm;
 import User.Model.Roles;
-import User.Model.User;
+import User.Model.CustomUser;
 import User.Service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ public class UserController {
     @Autowired
     private UserServiceImpl userServiceImpl;
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers(){
+    public ResponseEntity<List<CustomUser>> getUsers(){
         return ResponseEntity.ok().body(userServiceImpl.getUsers());
     }
 
     @PostMapping("/user/save")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-        User savedUser = userServiceImpl.saveUser(user);
+    public ResponseEntity<CustomUser> saveUser(@RequestBody CustomUser user) {
+        CustomUser savedUser = userServiceImpl.saveUser(user);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

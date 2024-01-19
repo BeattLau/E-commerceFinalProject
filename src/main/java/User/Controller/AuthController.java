@@ -1,33 +1,28 @@
 package User.Controller;
+import User.Model.CustomUser;
 import User.Service.UserServiceImpl;
-import User.Dto.UserLoginDto;
-import User.Dto.UserRegistrationDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private UserServiceImpl userServiceImpl;
+
+    private final UserServiceImpl userService;
+
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
-        userServiceImpl.registerUser(registrationDto);
-        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+    public ResponseEntity<CustomUser> registerUser(@RequestBody RegisterRequest registerRequest) {
+        return ResponseEntity.ok(userService.registerUser(registerRequest));
     }
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserLoginDto userLoginDto) {
-        String token = String.valueOf(userServiceImpl.loginUser(userLoginDto));
-        if (token != null) {
-            return ResponseEntity.ok().body("User logged in successfully. Token: " + token);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
+    @PostMapping("login")
+    public ResponseEntity<CustomUser> loginUser(@RequestBody LoginRequest loginRequest){
+        return ResponseEntity.ok(userService.loginUser(loginRequest));
     }
+
+
 }
