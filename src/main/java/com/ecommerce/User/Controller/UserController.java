@@ -1,7 +1,7 @@
 package com.ecommerce.User.Controller;
-import com.ecommerce.User.Model.RoleToUserForm;
-import com.ecommerce.User.Model.Roles;
-import com.ecommerce.User.Model.CustomUser;
+import com.ecommerce.User.Entity.RoleToUserForm;
+import com.ecommerce.User.Entity.Roles;
+import com.ecommerce.User.Entity.CustomUser;
 import com.ecommerce.User.Service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

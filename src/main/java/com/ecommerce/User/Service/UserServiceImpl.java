@@ -1,8 +1,8 @@
 package com.ecommerce.User.Service;
-import com.ecommerce.User.Controller.LoginRequest;
-import com.ecommerce.User.Controller.RegisterRequest;
-import com.ecommerce.User.Model.Roles;
-import com.ecommerce.User.Model.CustomUser;
+import com.ecommerce.Auth.LoginRequest;
+import com.ecommerce.Auth.RegisterRequest;
+import com.ecommerce.User.Entity.Roles;
+import com.ecommerce.User.Entity.CustomUser;
 import com.ecommerce.User.Repository.RolesRepository;
 import com.ecommerce.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
