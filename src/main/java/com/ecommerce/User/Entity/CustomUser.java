@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 @Entity
@@ -18,14 +19,18 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "users")
 public class CustomUser implements UserDetails {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
+
     private String name;
+
     @Column(unique = true)
-    private String email;
+    private String username;
+
     private String password;
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -33,9 +38,12 @@ public class CustomUser implements UserDetails {
     )
     private Set<Roles> roles;
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roles.toString()));
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+        return authorities;
     }
     @Override
     public boolean isAccountNonExpired() {
@@ -69,11 +77,6 @@ public class CustomUser implements UserDetails {
 
     public CustomUser setName(String name) {
         this.name = name;
-        return this;
-    }
-
-    public CustomUser setEmail(String email) {
-        this.email = email;
         return this;
     }
 

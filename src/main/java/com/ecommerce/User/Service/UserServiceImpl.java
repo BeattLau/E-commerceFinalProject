@@ -1,6 +1,6 @@
 package com.ecommerce.User.Service;
-import com.ecommerce.Auth.LoginRequest;
-import com.ecommerce.Auth.RegisterRequest;
+import com.ecommerce.User.Entity.AuthRequest;
+import com.ecommerce.User.Entity.RegisterRequest;
 import com.ecommerce.User.Entity.Roles;
 import com.ecommerce.User.Entity.CustomUser;
 import com.ecommerce.User.Repository.RolesRepository;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CustomUser saveUser(CustomUser user) {
-        log.info("Saving new user {} to the database", user.getEmail());
+        log.info("Saving new user {} to the database", user.getUsername());
         return userRepository.save(user);
     }
 
@@ -41,16 +41,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addRoleToUser(String email, String roleName) {
-        log.info("Adding role {} to user{}", roleName, email);
-        CustomUser user = userRepository.findByEmail(email);
+    public void addRoleToUser(String username, String roleName) {
+        log.info("Adding role {} to user{}", roleName, username);
+        CustomUser user = userRepository.findByUsername(username);
         Roles role = rolesRepository.findByName(roleName);
         user.getRoles().add(role);
     }
     @Override
-    public CustomUser getUser(String email) {
-        log.info("Fetching user {}", email);
-        return userRepository.findByEmail(email);
+    public CustomUser getUser(String username) {
+        log.info("Fetching user {}", username);
+        return userRepository.findByUsername(username);
     }
     @Override
     public List<CustomUser> getUsers() {
@@ -59,10 +59,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public CustomUser registerUser(RegisterRequest registerRequest) {
-        log.info("Registering new user {}", registerRequest.getEmail());
+        log.info("Registering new user {}", registerRequest.getUsername());
         CustomUser user = new CustomUser();
         user.setUsername(registerRequest.getUsername());
-        user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         Roles userRole = rolesRepository.findByName("ROLE_USER");
         user.setRoles(Collections.singleton(userRole));
@@ -71,18 +70,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CustomUser loginUser(LoginRequest loginRequest) {
-        log.info("Logging in user {}", loginRequest.getEmail());
-        CustomUser user = userRepository.findByEmail(loginRequest.getEmail());
+    public CustomUser loginUser(AuthRequest authRequest) {
+        log.info("Logging in user {}", authRequest.getUsername());
+        CustomUser user = userRepository.findByUsername(authRequest.getUsername());
         if (user != null) {
-            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                log.info("User logged in: " + user.getEmail());
+            if (passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
+                log.info("User logged in: " + user.getUsername());
                 return user;
             } else {
-                log.warn("Invalid password for user: " + user.getEmail());
+                log.warn("Invalid password for user: " + user.getUsername());
             }
         } else {
-            log.warn("User not found: " + loginRequest.getEmail());
+            log.warn("User not found: " + authRequest.getUsername());
         }
         return null;
     }
