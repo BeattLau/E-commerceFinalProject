@@ -27,7 +27,7 @@ public class AuthenticationService {
     @Builder
     public AuthenticationResponse register(RegisterRequest request) {
         CustomUser user = CustomUser.builder()
-                .id(1L)
+                .userId(1L)
                 .username("Test.1")
                 .name("Test name")
                 .username("user@test.com")

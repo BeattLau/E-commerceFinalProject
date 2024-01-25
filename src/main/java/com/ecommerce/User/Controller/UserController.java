@@ -37,7 +37,7 @@ public class UserController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(savedUser.getId())
+                .buildAndExpand(savedUser.getUserId())
                 .toUri();
         return ResponseEntity.created(location).body(savedUser);
     }
@@ -47,7 +47,7 @@ public class UserController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(savedRole.getId())
+                .buildAndExpand(savedRole.getRoleId())
                 .toUri();
         return ResponseEntity.created(location).body(savedRole);
     }

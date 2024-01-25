@@ -12,14 +12,14 @@ import java.util.Set;
 public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long roleId;
 
-    private String name;
+    private String role_name;
 
     @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
     private Set<CustomUser> users = new HashSet<>();
 
     public Roles(String roleName) {
-        this.name = roleName;
+        this.role_name = roleName;
     }
 }

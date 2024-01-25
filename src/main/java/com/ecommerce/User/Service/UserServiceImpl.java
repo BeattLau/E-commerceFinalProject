@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Roles saveRoles(Roles roles) {
-        log.info("Saving new role {} to the database", roles.getName());
+        log.info("Saving new role {} to the database", roles.getRole_name());
         return rolesRepository.save(roles);
     }
 
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     public void addRoleToUser(String username, String roleName) {
         log.info("Adding role {} to user{}", roleName, username);
         CustomUser user = userRepository.findByUsername(username);
-        Roles role = rolesRepository.findByName(roleName);
+        Roles role = rolesRepository.findByRole_name(roleName);
         user.getRoles().add(role);
     }
     @Override
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         CustomUser user = new CustomUser();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        Roles userRole = rolesRepository.findByName("ROLE_USER");
+        Roles userRole = rolesRepository.findByRole_name("ROLE_USER");
         user.setRoles(Collections.singleton(userRole));
         userRepository.save(user);
         return user;

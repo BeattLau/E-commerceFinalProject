@@ -20,7 +20,7 @@ import java.util.Set;
 public class CustomUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     private String name;
 
@@ -30,20 +30,24 @@ public class CustomUser implements UserDetails {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "roles_id")
-    )
-    private Set<Roles> roles;
+        @JoinTable(
+                name = "user_roles",
+                joinColumns = @JoinColumn(name = "userId"),
+                inverseJoinColumns = @JoinColumn(name = "roles_id")
+        )
 
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
-        return authorities;
-    }
+        private Set<Roles> roles;
+
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            Set<GrantedAuthority> authorities = new HashSet<>();
+            roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRole_name())));
+            return authorities;
+        }
+
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -64,8 +68,8 @@ public class CustomUser implements UserDetails {
         return true;
     }
 
-    public CustomUser setId(Long id) {
-        this.id = id;
+    public CustomUser setUserId(Long userId) {
+        this.userId = userId;
         return this;
     }
 
@@ -84,8 +88,10 @@ public class CustomUser implements UserDetails {
         return this;
     }
 
-    public CustomUser setRoles(Set<Roles> roles) {
-        this.roles = roles;
+  public CustomUser setRoles(Set<Roles> roles) {
+      this.roles = roles;
         return this;
     }
+
+
 }
