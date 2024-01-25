@@ -1,10 +1,8 @@
-package Product.Service;
+package eCommerce.Product.Service;
 
-import Product.Model.Products;
-import Product.Repository.ProductRepository;
+import eCommerce.Product.Model.Products;
+import eCommerce.Product.Repository.ProductRepository;
 import User.Repository.UserRepository;
-import User.Model.User;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,6 @@ import java.util.List;
 public class ProductsServiceImpl implements ProductsService {
     @Autowired
     private ProductRepository productRepository;
-    @Autowired
-    private UserRepository userRepository;
     @Override
     public Products createProducts(Products products) {
         log.info("Creating new product {} and saving to the database", products.getProductName());
@@ -39,13 +35,17 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public Products getProduct(String productName) {
+    public Products getProductByProductName(String productName) {
             log.info("Fetching product {}", productName);
             return productRepository.findProductsByProductName(productName);
     }
-
     @Override
-    public List<Products> getProducts() {
+    public Products getProductByProductId(String productId) {
+        log.info("Fetching product {}", productId);
+        return productRepository.findProductsByProductId(Long.valueOf(productId));
+    }
+    @Override
+    public List<Products> getAllProducts() {
         log.info("Fetching all products");
         return productRepository.findAll();
     }

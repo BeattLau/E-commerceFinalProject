@@ -1,4 +1,4 @@
-package Product.Model;
+package eCommerce.Product.Model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

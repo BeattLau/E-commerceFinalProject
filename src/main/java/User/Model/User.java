@@ -12,11 +12,6 @@ public class User {
     @Column(unique = true)
     private String email;
     private String password;
-    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
-    private Set<Roles> roles;
-
     public Long getId() {
         return id;
     }
@@ -49,12 +44,6 @@ public class User {
         this.password = password;
     }
 
-    public Set<Roles> getRoles() {
-        return roles;
-    }
 
-    public void setRoles(Set<Roles> roles) {
-        this.roles = roles;
-    }
 }
 
