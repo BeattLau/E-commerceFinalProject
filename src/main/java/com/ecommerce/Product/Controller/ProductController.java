@@ -1,7 +1,7 @@
 package com.ecommerce.Product.Controller;
 
 import com.ecommerce.Product.Service.ProductsServiceImpl;
-import com.ecommerce.Product.Model.Products;
+import com.ecommerce.Product.Entity.Products;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

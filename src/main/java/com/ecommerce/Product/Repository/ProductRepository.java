@@ -1,6 +1,6 @@
 package com.ecommerce.Product.Repository;
 
-import com.ecommerce.Product.Model.Products;
+import com.ecommerce.Product.Entity.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

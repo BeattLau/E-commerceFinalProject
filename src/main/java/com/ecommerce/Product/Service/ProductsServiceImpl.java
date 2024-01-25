@@ -1,6 +1,6 @@
 package com.ecommerce.Product.Service;
 
-import com.ecommerce.Product.Model.Products;
+import com.ecommerce.Product.Entity.Products;
 import com.ecommerce.Product.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

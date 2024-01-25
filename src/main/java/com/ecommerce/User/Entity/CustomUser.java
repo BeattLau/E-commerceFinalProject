@@ -33,7 +33,7 @@ public class CustomUser implements UserDetails {
         @JoinTable(
                 name = "user_roles",
                 joinColumns = @JoinColumn(name = "userId"),
-                inverseJoinColumns = @JoinColumn(name = "roles_id")
+                inverseJoinColumns = @JoinColumn(name = "roleId")
         )
 
 

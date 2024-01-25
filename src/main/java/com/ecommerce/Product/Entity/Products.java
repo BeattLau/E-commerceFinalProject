@@ -1,4 +1,4 @@
-package com.ecommerce.Product.Model;
+package com.ecommerce.Product.Entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
