@@ -1,6 +1,6 @@
 package com.ecommerce.Service;
 
-import com.ecommerce.Responce.AuthenticationResponse;
+import com.ecommerce.Response.AuthenticationResponse;
 import com.ecommerce.Request.AuthRequest;
 import com.ecommerce.Request.RegisterRequest;
 import com.ecommerce.Entity.Roles;
@@ -20,7 +20,6 @@ import java.util.Set;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtServiceImpl jwtServiceImpl;
     private final AuthenticationManager authenticationManager;
     @Builder
@@ -31,7 +30,7 @@ public class AuthenticationService {
                 .name("Test name")
                 .username("user@test.com")
                 .password("password123")
-                .roles(Set.of(new Roles("USER")))
+                .roles(Set.of(new Roles("ADMIN")))
                 .build();
 
         userRepository.save(user);
