@@ -1,15 +1,15 @@
 package com.ecommerce.Controller;
 
+import com.ecommerce.Request.ProductRequest;
 import com.ecommerce.Service.ProductsService;
 import com.ecommerce.Service.ProductsServiceImpl;
 import com.ecommerce.Entity.Products;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,4 +43,56 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PostMapping("/products/add")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
+    public ResponseEntity<Products>addProduct(@RequestBody ProductRequest productRequest){
+        try {
+            Products newProduct = new Products();
+            newProduct.setProductName(productRequest.getProductName());
+            newProduct.setDescription(productRequest.getDescription());
+            newProduct.setPrice(productRequest.getPrice());
+            newProduct.setQuantity(productRequest.getQuantity());
+
+            Products savedProduct = productsService.addProducts(newProduct);
+            return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/update/{productId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
+    public ResponseEntity<Products> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductRequest productRequest) {
+        try {
+            Products existingProduct = productsService.getProductByProductId(String.valueOf(productId));
+            if (existingProduct == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            existingProduct.setProductName(productRequest.getProductName());
+            existingProduct.setDescription(productRequest.getDescription());
+            existingProduct.setPrice(productRequest.getPrice());
+            existingProduct.setQuantity(productRequest.getQuantity());
+
+            Products updatedProduct = productsService.updateProducts(existingProduct);
+            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @DeleteMapping("/delete/{productId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+        try {
+            if (!productsService.productExists(productId)) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            productsService.deleteProducts(productId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

@@ -89,6 +89,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetailsService MyUserDetailService() {
-        return null;
+        return this::getUser;
     }
 }

@@ -1,6 +1,7 @@
 package com.ecommerce.Service;
 
 import com.ecommerce.Entity.Products;
+import com.ecommerce.ExceptionHandler.ProductNotFoundException;
 import com.ecommerce.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ public class ProductsServiceImpl implements ProductsService {
     @Autowired
     private ProductRepository productRepository;
     @Override
-    public Products createProducts(Products products) {
+    public Products addProducts(Products products) {
         log.info("Creating new product {} and saving to the database", products.getProductName());
         return productRepository.save(products);
     }
@@ -31,6 +32,14 @@ public class ProductsServiceImpl implements ProductsService {
         existingProducts.setPrice(updatedProducts.getPrice());
         existingProducts.setQuantity(updatedProducts.getQuantity());
         return productRepository.save(existingProducts);
+    }
+
+    public void deleteProducts(Long productId) throws ProductNotFoundException {
+        if (productRepository.existsById(productId)) {
+            productRepository.deleteById(productId);
+        } else {
+            throw new ProductNotFoundException("Product with ID " + productId + " not found");
+        }
     }
 
     @Override
@@ -47,6 +56,9 @@ public class ProductsServiceImpl implements ProductsService {
     public List<Products> getAllProducts() {
         log.info("Fetching all products");
         return productRepository.findAll();
+    }
+    public boolean productExists(Long productId) {
+        return productRepository.existsById(productId);
     }
 
  /*   public Products addProductsToCart(Long productId, Long userId) {
