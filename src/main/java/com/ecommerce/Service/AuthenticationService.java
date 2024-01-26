@@ -1,6 +1,6 @@
 package com.ecommerce.Service;
 
-import com.ecommerce.Responce.AuthenticationResponse;
+import com.ecommerce.Response.AuthenticationResponse;
 import com.ecommerce.Request.AuthRequest;
 import com.ecommerce.Request.RegisterRequest;
 import com.ecommerce.Entity.Roles;

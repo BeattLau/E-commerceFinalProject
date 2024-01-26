@@ -43,7 +43,7 @@ public class CustomUser implements UserDetails {
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
             Set<GrantedAuthority> authorities = new HashSet<>();
-            roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRole_name())));
+            roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
             return authorities;
         }
 
