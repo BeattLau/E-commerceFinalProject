@@ -8,7 +8,10 @@ com/ecommerce/Auth/AuthenticationResponse$AuthenticationResponseBuilder.class
 com/ecommerce/Config/SecurityConfig.class
 com/ecommerce/User/Repository/RolesRepository.class
 com/ecommerce/User/Service/AuthenticationService$AuthenticationResponseBuilder.class
+<<<<<<< HEAD
 com/ecommerce/Product/Model/Products.class
+=======
+>>>>>>> main
 com/ecommerce/ExceptionHandler/UserAlreadyExistsException.class
 com/ecommerce/Jwt/AppInitializer.class
 com/ecommerce/User/Entity/RoleToUserForm.class
@@ -19,13 +22,19 @@ com/ecommerce/User/Controller/UserController.class
 com/ecommerce/User/Controller/AuthController.class
 com/ecommerce/User/Entity/Permission$Role.class
 com/ecommerce/User/Entity/Permission$RolePermission.class
+<<<<<<< HEAD
 com/ecommerce/Product/Repository/ProductRepository.class
+=======
+>>>>>>> main
 com/ecommerce/Jwt/JwtUtil.class
 com/ecommerce/User/Entity/RegisterRequest$RegisterRequestBuilder.class
 com/ecommerce/Documentation/SwaggerConfig.class
 com/ecommerce/ExceptionHandler/GlobalExceptionHandler.class
 com/ecommerce/Auth/AuthenticationResponse.class
+<<<<<<< HEAD
 com/ecommerce/Product/Service/ProductsServiceImpl.class
+=======
+>>>>>>> main
 com/ecommerce/User/Entity/AuthRequest.class
 com/ecommerce/User/Repository/UserRepository.class
 com/ecommerce/User/Entity/RegisterRequest.class
@@ -35,8 +44,14 @@ com/ecommerce/User/Service/UserServiceImpl.class
 com/ecommerce/User/Entity/Permission.class
 com/ecommerce/Jwt/JwtAuthenticationEntryPoint.class
 com/ecommerce/User/Service/MyUserDetailsService.class
+<<<<<<< HEAD
 com/ecommerce/Product/Service/ProductsService.class
 com/ecommerce/ExceptionHandler/UserNotFoundException.class
 com/ecommerce/User/Service/AuthenticationService.class
 com/ecommerce/User/Entity/CustomUser$CustomUserBuilder.class
 com/ecommerce/Product/Controller/ProductController.class
+=======
+com/ecommerce/ExceptionHandler/UserNotFoundException.class
+com/ecommerce/User/Service/AuthenticationService.class
+com/ecommerce/User/Entity/CustomUser$CustomUserBuilder.class
+>>>>>>> main
