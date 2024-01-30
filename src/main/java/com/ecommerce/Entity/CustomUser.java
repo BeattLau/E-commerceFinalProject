@@ -38,7 +38,7 @@ public class CustomUser implements UserDetails {
     private Set<Roles> roles;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Products> shoppingCart = new ArrayList<>();
+    private final List<Products> shoppingCart = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
