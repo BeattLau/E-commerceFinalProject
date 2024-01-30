@@ -25,7 +25,7 @@ public class ProductController {
         return ResponseEntity.ok().body(productsService.getAllProducts());
     }
 
-    @GetMapping("/{productName}")
+    @GetMapping("/products/{productName}")
     public ResponseEntity<Products> getProductByProductName(@PathVariable Long productName) {
         Products product = productsService.getProductByProductName(String.valueOf(productName));
         if (product != null) {
@@ -34,7 +34,7 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/{productId}")
+    @GetMapping("/products/{productId}")
     public ResponseEntity<Products> getProductById(@PathVariable Long productId) {
         Products product = productsService.getProductByProductId(String.valueOf(productId));
         if (product != null) {
@@ -43,7 +43,7 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/products/add")
+    @PostMapping("/products")
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public ResponseEntity<Products>addProduct(@RequestBody ProductRequest productRequest){
         try {
@@ -59,7 +59,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PutMapping("/update/{productId}")
+    @PutMapping("/products/update/{productId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public ResponseEntity<Products> updateProduct(
             @PathVariable Long productId,
@@ -80,7 +80,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @DeleteMapping("/delete/{productId}")
+    @DeleteMapping("/products/delete/{productId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         try {
