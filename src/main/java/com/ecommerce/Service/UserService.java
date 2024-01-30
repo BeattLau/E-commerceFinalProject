@@ -6,6 +6,7 @@ import com.ecommerce.Entity.CustomUser;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService{
     CustomUser saveUser(CustomUser user);
@@ -15,6 +16,6 @@ public interface UserService{
     List<CustomUser> getUsers();
     CustomUser registerUser(RegisterRequest registerRequest);
     CustomUser loginUser(AuthRequest authRequest);
-
     UserDetailsService MyUserDetailService();
+    Set<Roles> getRolesByUsername(String Username);
 }

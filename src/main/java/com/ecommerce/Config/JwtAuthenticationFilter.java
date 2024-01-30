@@ -1,4 +1,6 @@
 package com.ecommerce.Config;
+import com.ecommerce.Entity.Roles;
+import com.ecommerce.Service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,17 +17,17 @@ import com.ecommerce.Service.JwtService;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.apache.commons.lang3.StringUtils;
 
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
-
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -46,26 +48,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.isNotEmpty(username)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            List<String> roles = getRolesByUsername(username);
+            Set<Roles> roles = userService.getRolesByUsername(username);
 
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    username, null, new ArrayList<>());
+                    username, null, getAuthorities(roles));
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             context.setAuthentication(authToken);
             SecurityContextHolder.setContext(context);
-
         }
+
         filterChain.doFilter(request, response);
     }
-    private List<String> getRolesByUsername(String username) {
-        List<String> roles = new ArrayList<>();
-        roles.add("ROLE_ADMIN");
-        return roles;
-    }
-    private List<GrantedAuthority> getAuthorities(List<String> roles) {
+    private List<GrantedAuthority> getAuthorities(Set<Roles> roles) {
         return roles.stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                 .collect(Collectors.toList());
     }
+
 }

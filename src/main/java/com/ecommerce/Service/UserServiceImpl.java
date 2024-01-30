@@ -9,14 +9,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Collections;
-import java.util.List;
+
+import java.util.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -90,5 +89,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetailsService MyUserDetailService() {
         return this::getUser;
+    }
+
+    @Override
+    public Set<Roles> getRolesByUsername(String username) {
+        Optional<CustomUser> customUserOptional = Optional.ofNullable(userRepository.findByUsername(username));
+
+        if (customUserOptional.isPresent()) {
+            CustomUser customUser = customUserOptional.get();
+            return customUser.getRoles();
+        } else {
+            return Collections.emptySet();
+        }
     }
 }
