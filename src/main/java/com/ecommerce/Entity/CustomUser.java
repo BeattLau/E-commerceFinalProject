@@ -8,9 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 @Entity
 @Builder
 @Data
@@ -18,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "users")
 public class CustomUser implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -30,22 +30,22 @@ public class CustomUser implements UserDetails {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-        @JoinTable(
-                name = "user_roles",
-                joinColumns = @JoinColumn(name = "userId"),
-                inverseJoinColumns = @JoinColumn(name = "roleId")
-        )
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Roles> roles;
 
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private List<ShoppingCart> shoppingCart = new ArrayList<>();
 
-        private Set<Roles> roles;
-
-
-        @Override
-        public Collection<? extends GrantedAuthority> getAuthorities() {
-            Set<GrantedAuthority> authorities = new HashSet<>();
-            roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
-            return authorities;
-        }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return authorities;
+    }
 
 
     @Override
