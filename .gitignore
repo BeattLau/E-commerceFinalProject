@@ -38,4 +38,5 @@ out/
 .vscode/
 
 .idea/
-.target/
+# Ignore target directory
+target/
