@@ -63,14 +63,4 @@ public class ProductsServiceImpl implements ProductsService {
         return productRepository.existsById(productId);
     }
 
- /*   public Products addProductsToCart(Long productId, Long userId) {
-        Products product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        user.getShoppingCart().add(product);
-        return product;
-    }*/
 }
-
-

@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "Products")
 @RequiredArgsConstructor @Getter @Setter
-public class Products{
+public class Products extends ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;

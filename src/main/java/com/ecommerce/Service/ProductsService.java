@@ -22,6 +22,4 @@ public interface ProductsService {
 
     boolean productExists(Long productId);
 
-//    Products addProductsToCart(Products products);
-
 }
