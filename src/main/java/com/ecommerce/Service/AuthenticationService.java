@@ -20,18 +20,16 @@ import java.util.Set;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtServiceImpl jwtServiceImpl;
     private final AuthenticationManager authenticationManager;
     @Builder
     public AuthenticationResponse register(RegisterRequest request) {
         CustomUser user = CustomUser.builder()
-                .userId(1L)
                 .username("Test.1")
                 .name("Test name")
                 .username("user@test.com")
                 .password("password123")
-                .roles(Set.of(new Roles("USER")))
+                .roles(Set.of(new Roles("ADMIN")))
                 .build();
 
         userRepository.save(user);
