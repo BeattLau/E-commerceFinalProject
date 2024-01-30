@@ -6,11 +6,13 @@ import com.ecommerce.Service.ProductsServiceImpl;
 import com.ecommerce.Entity.Products;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -21,8 +23,8 @@ public class ProductController {
     private ProductsService productsService;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Products>> getAllProducts() {
-        return ResponseEntity.ok().body(productsService.getAllProducts());
+    public ResponseEntity<Page<Products>> getAllProducts(Pageable pageable) {
+        return ResponseEntity.ok().body(productsService.getAllProducts((org.springframework.data.domain.Pageable) pageable));
     }
 
     @GetMapping("/products/{productName}")

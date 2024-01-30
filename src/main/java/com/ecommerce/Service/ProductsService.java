@@ -2,6 +2,8 @@ package com.ecommerce.Service;
 
 import com.ecommerce.Entity.Products;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +18,7 @@ public interface ProductsService {
     Products getProductByProductName(String productName);
     Products getProductByProductId(String productId);
 
-    List<Products> getAllProducts();
+    Page<Products> getAllProducts(Pageable pageable);
 
     boolean productExists(Long productId);
 
