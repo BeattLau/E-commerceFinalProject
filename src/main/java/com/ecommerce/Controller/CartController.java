@@ -22,7 +22,7 @@ public class CartController {
     @Autowired
     CartService cartService;
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/cart/user/{userId}")
     public ResponseEntity<List<Products>> getCartContents(@PathVariable Long userId) {
         try {
             List<Products> cartContents = cartService.getCartContents(userId);
@@ -31,7 +31,7 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         }
     }
-    @PostMapping("/add")
+    @PostMapping("/cart/")
     public ResponseEntity<List<Products>> addProductToCart(
             @RequestBody Products products,
             @RequestParam Long userId,
