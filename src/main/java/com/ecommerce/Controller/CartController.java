@@ -1,7 +1,9 @@
 package com.ecommerce.Controller;
 
+import com.ecommerce.Entity.CustomUser;
 import com.ecommerce.Entity.Products;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
+import com.ecommerce.ExceptionHandler.UserNotFoundException;
 import com.ecommerce.Service.CartService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +27,17 @@ public class CartController {
 
     @PostMapping("/cart")
     public ResponseEntity<List<Products>> addProductToCart(@RequestBody Products products, @RequestParam Long productId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
         try {
-            List<Products> addedProducts = cartService.addProductToCart(products, Long.valueOf(username), productId);
+            CustomUser currentUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            List<Products> addedProducts = cartService.addProductToCart(productId, currentUser);
             return ResponseEntity.ok(addedProducts);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
+
 
     @DeleteMapping("/cart/delete")
     public ResponseEntity<String> deleteProductFromCart(@RequestParam Long productId) {

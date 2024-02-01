@@ -10,8 +10,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "Products")
-@RequiredArgsConstructor @Getter @Setter
-public class Products extends ShoppingCart {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;

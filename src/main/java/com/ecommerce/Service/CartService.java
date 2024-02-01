@@ -1,5 +1,6 @@
 package com.ecommerce.Service;
 
+import com.ecommerce.Entity.CustomUser;
 import com.ecommerce.Entity.Products;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
 import com.ecommerce.ExceptionHandler.UserNotFoundException;
@@ -9,8 +10,8 @@ import java.util.List;
 
 @Service
 public interface CartService {
-    List<Products> getCartContents(Long userId) throws UserNotFoundException;
-    List<Products> addProductToCart( Products products, Long userId, Long productId);
+    List<Products> getCartContents() throws UserNotFoundException;
+    List<Products> addProductToCart(Long productId, CustomUser currentUser) throws UserNotFoundException;
     void deleteProductFromCart(Long productId, Long userId) throws ProductNotFoundException;
     }
 
