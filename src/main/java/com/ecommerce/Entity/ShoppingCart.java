@@ -24,4 +24,10 @@ public class ShoppingCart {
 
     private int quantity;
     private double totalValue;
+
+    public void calculateTotalValue() {
+        if (product != null) {
+            this.totalValue = product.getPrice() * quantity;
+        }
+    }
 }
