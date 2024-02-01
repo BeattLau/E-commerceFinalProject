@@ -2,13 +2,14 @@ package com.ecommerce.Controller;
 
 import com.ecommerce.Entity.Products;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
-import com.ecommerce.ExceptionHandler.UserNotFoundException;
 import com.ecommerce.Service.CartService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -22,33 +23,24 @@ public class CartController {
     @Autowired
     CartService cartService;
 
-    @GetMapping("/cart/user/{userId}")
-    public ResponseEntity<List<Products>> getCartContents(@PathVariable Long userId) {
+    @PostMapping("/cart")
+    public ResponseEntity<List<Products>> addProductToCart(@RequestBody Products products, @RequestParam Long productId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
-            List<Products> cartContents = cartService.getCartContents(userId);
-            return ResponseEntity.ok(cartContents);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-        }
-    }
-    @PostMapping("/cart/")
-    public ResponseEntity<List<Products>> addProductToCart(
-            @RequestBody Products products,
-            @RequestParam Long userId,
-            @RequestParam Long productId) {
-        try {
-            List<Products> addedProducts = cartService.addProductToCart(products, userId, productId);
+            List<Products> addedProducts = cartService.addProductToCart(products, Long.valueOf(username), productId);
             return ResponseEntity.ok(addedProducts);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         }
     }
+
     @DeleteMapping("/cart/delete")
-    public ResponseEntity<String> deleteProductFromCart(
-            @RequestParam Long userId,
-            @RequestParam Long productId) {
+    public ResponseEntity<String> deleteProductFromCart(@RequestParam Long productId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
-            cartService.deleteProductFromCart(userId, productId);
+            cartService.deleteProductFromCart(Long.valueOf(username), productId);
             return ResponseEntity.ok("Product removed from the cart successfully");
         } catch (ProductNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
