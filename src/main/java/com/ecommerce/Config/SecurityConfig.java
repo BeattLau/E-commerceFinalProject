@@ -28,17 +28,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(request -> request
-                        .requestMatchers
-                                ("/v2/api-docs",
-                                        "/swagger-resources",
-                                        "/swagger-resources/**",
-                                        "/configuration/ui",
-                                        "/configuration/security",
-                                        "/swagger-ui.html",
-                                        "/v3/api-docs/**",
-                                        "/swagger-ui/**",
-                                        "/swagger-resources/**",
-                                        "/swagger-ui/index.html").permitAll()
                         .requestMatchers("/products",
                                 "products/name/{name}").permitAll()
                         .requestMatchers(

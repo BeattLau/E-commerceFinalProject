@@ -27,7 +27,7 @@ public class AuthenticationService {
                 .name("Test name")
                 .username("user@test.com")
                 .password("password123")
-                .roles(Set.of(new Roles("ADMIN")))
+                .roles(Set.of(new Roles("ROLE_ADMIN")))
                 .build();
 
         userRepository.save(user);
