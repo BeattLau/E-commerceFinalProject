@@ -1,12 +1,9 @@
 package com.ecommerce.Response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data @Builder
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor @NoArgsConstructor @Getter
 public class AuthenticationResponse {
     private String token;
 }

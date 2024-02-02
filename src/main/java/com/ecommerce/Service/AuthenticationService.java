@@ -6,7 +6,6 @@ import com.ecommerce.Request.RegisterRequest;
 import com.ecommerce.Entity.Roles;
 import com.ecommerce.Repository.UserRepository;
 import com.ecommerce.Entity.CustomUser;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
