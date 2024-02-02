@@ -28,13 +28,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(request -> request
+                        .requestMatchers("api/v1/login", "api/v1/register").permitAll()
                         .requestMatchers("/products",
-                                "products/name/{name}").permitAll()
+                                "api/v1/products/name/{name}", "api/v1/products/id/{productId}").permitAll()
                         .requestMatchers(
-                                "products/id/{productId}",
-                                "/api/v1/auth/register",
-                                "/api/v1/auth/login")
-                        .permitAll().anyRequest().authenticated())
+                                "api/v1/products", "api/v1/products/update/", "api/v1/products/delete/")
+                        .hasAnyRole("ADMIN", "SELLER")
+                        .requestMatchers("api/v1/cart/**").hasRole("CUSTOMER")
+                        .anyRequest().authenticated())
                 .sessionManagement(manager ->manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
