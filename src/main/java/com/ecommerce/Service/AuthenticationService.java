@@ -12,6 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -19,26 +21,27 @@ import java.util.Set;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-    private final JwtServiceImpl jwtServiceImpl;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    @Builder
+
     public AuthenticationResponse register(RegisterRequest request) {
-        CustomUser user = CustomUser.builder()
-                .name("Test name")
-                .username("user@test.com")
-                .password("password123")
-                .roles(Set.of(new Roles("ROLE_ADMIN")))
-                .build();
+        CustomUser user = new CustomUser();
+        user.setName(request.getName());
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setRoles(Set.of(new Roles("ROLE_ADMIN")));
 
         userRepository.save(user);
-        var jwtToken = jwtServiceImpl.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        Map<String, Object> extraClaims = new HashMap<>();
+        var jwtToken = jwtService.generateToken(user, extraClaims, jwtService.getJwtExpiration());
+        return new AuthenticationResponse(jwtToken);
     }
 
     public AuthenticationResponse login(AuthRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         var user = userRepository.findByUsername(request.getUsername());
-        var jwtToken = jwtServiceImpl.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        Map<String, Object> extraClaims = new HashMap<>();
+        var jwtToken = jwtService.generateToken(user, extraClaims, jwtService.getJwtExpiration());
+        return new AuthenticationResponse(jwtToken);
     }
 }

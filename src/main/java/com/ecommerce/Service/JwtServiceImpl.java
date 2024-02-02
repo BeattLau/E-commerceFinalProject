@@ -1,58 +1,64 @@
 package com.ecommerce.Service;
 
+import com.ecommerce.Entity.CustomUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 
-import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService {
+
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
+    @Getter
+    @Value("${jwt.expiration}")
+    private Long jwtExpiration;
 
     @Override
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-    @Override
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(),userDetails);
-    }
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + 1000 * 60 * 60 * 24);
 
-        return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, getSigningKey())
+    public String generateToken(CustomUser customUser, Map<String, Object> extraClaims) {
+        return generateToken(customUser, extraClaims, jwtExpiration);
+    }
+    @Override
+    public String generateToken(CustomUser customUser, Map<String, Object> extraClaims, Long jwtExpiration) {
+        return Jwts
+                .builder()
+                .setSubject(customUser.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .addClaims(extraClaims)
+                .signWith(Keys.hmacShaKeyFor(jwtSigningKey.getBytes()), SignatureAlgorithm.HS512)
                 .compact();
     }
+
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return userName.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
+
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {
-        return extractClaim(token,Claims::getExpiration);
+        return extractClaim(token, Claims::getExpiration);
     }
+
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
         final Claims claims = extractAllClaims(token);
         return claimsResolvers.apply(claims);
@@ -60,13 +66,8 @@ public class JwtServiceImpl implements JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(Keys.hmacShaKeyFor(jwtSigningKey.getBytes()))
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSigningKey.getBytes());
     }
 }
