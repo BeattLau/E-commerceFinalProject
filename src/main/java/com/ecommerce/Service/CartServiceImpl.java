@@ -5,6 +5,7 @@ import com.ecommerce.Entity.Products;
 import com.ecommerce.Entity.ShoppingCart;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
 import com.ecommerce.ExceptionHandler.UserNotFoundException;
+import com.ecommerce.Repository.CartRepository;
 import com.ecommerce.Repository.ProductRepository;
 import com.ecommerce.Repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +26,8 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
     private CustomUser getCurrentUser() throws UserNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -70,5 +73,9 @@ public void deleteProductFromCart(Long productId, Long userId) throws ProductNot
     } else {
         throw new ProductNotFoundException("Product with ID " + productId + " not found in the user's cart");
         }
+    }
+    @Override
+    public void saveCart(ShoppingCart shoppingCart) {
+        cartRepository.save(shoppingCart);
     }
 }
