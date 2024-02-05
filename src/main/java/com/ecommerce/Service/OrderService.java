@@ -1,9 +1,6 @@
 package com.ecommerce.Service;
 
-import com.ecommerce.Entity.CartItems;
-import com.ecommerce.Entity.Order;
-import com.ecommerce.Entity.OrderStatus;
-import com.ecommerce.Entity.ShoppingCart;
+import com.ecommerce.Entity.*;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -21,4 +18,8 @@ public interface OrderService {
     Order saveOrder(Order order);
     void deleteOrder(Long orderId);
     Order updateOrderStatus(Long orderId, OrderStatus newStatus);
+    void placeOrder(Order order);
+    void validateOrder(Order order);
+
+    List<Order> getOrderHistoryForUser(CustomUser currentUser);
 }

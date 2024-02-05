@@ -84,4 +84,23 @@ public class OrderServiceImpl implements OrderService{
         order.setStatus(newStatus);
         return orderRepository.save(order);
     }
+    @Override
+    public void placeOrder(Order order) {
+        validateOrder(order);
+        orderRepository.save(order);
+
+    }
+    @Override
+    public void validateOrder(Order order) {
+        if (order.getUser() == null) {
+            throw new IllegalArgumentException("Order must have a user.");
+        }
+        if (order.getTotalValue() <= 0) {
+            throw new IllegalArgumentException("Order total value must be greater than zero.");
+        }
+    }
+    @Override
+    public List<Order> getOrderHistoryForUser(CustomUser currentUser) {
+        return orderRepository.findOrdersByUserOrderByDateDesc(currentUser);
+    }
 }

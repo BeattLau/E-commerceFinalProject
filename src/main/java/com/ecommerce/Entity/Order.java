@@ -13,6 +13,7 @@ public class Order {
     private Long orderId;
     private Date date;
     @ManyToOne
+    @JoinColumn(name= "userId")
     private CustomUser user;
     private double totalValue;
     @Enumerated(EnumType.STRING)
