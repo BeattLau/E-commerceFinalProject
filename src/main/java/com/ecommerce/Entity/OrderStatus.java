@@ -1,5 +1,5 @@
 package com.ecommerce.Entity;
 
 public enum OrderStatus {
-    PENDING, PROCESSING, DISPATCHED, DELIVERED
+    PURCHASED, PENDING, PROCESSING, DISPATCHED, DELIVERED
 }

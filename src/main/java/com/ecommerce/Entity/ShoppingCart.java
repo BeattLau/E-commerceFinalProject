@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name="shoppingCart")
 @RequiredArgsConstructor
@@ -25,6 +27,8 @@ public class ShoppingCart {
 
     private int quantity;
     private double totalValue;
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
+    private List<CartItems> cartItems;
 
     public void calculateTotalValue() {
         if (product != null) {

@@ -51,8 +51,8 @@ public List<Products> addProductToCart(Long productId, CustomUser currentUser) t
     ShoppingCart shoppingCart = new ShoppingCart();
     shoppingCart.setUser(user);
     shoppingCart.setProduct(productToAdd);
-    shoppingCart.setQuantity(1); // You may adjust the quantity as needed
-    shoppingCart.calculateTotalValue(); // Calculate total value based on quantity and product price
+    shoppingCart.setQuantity(1);
+    shoppingCart.calculateTotalValue();
 
     user.getShoppingCart().add(shoppingCart);
 
