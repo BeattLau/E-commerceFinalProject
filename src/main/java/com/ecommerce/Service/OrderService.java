@@ -6,11 +6,13 @@ import com.ecommerce.Entity.OrderStatus;
 import com.ecommerce.Entity.ShoppingCart;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public interface OrderService {
+    List<Order> getUserOrders(Long userId) throws AccessDeniedException;
     Order convertCartToOrder(ShoppingCart shoppingCart);
     double calculateTotalValue(List<CartItems> items);
     List<Order> getAllOrders();

@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    Order findOrderByUserId(Long userId);
     Order findOrderByOrderId(Long orderId);
     Order findOrderByDate(Date date);
 

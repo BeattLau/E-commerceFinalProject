@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService{
+    CustomUser getCurrentUser();
     CustomUser saveUser(CustomUser user);
     Roles saveRoles(Roles roles);
     void addRoleToUser(String username, String roleName);

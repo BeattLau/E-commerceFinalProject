@@ -1,13 +1,11 @@
 package com.ecommerce.Service;
 
-import com.ecommerce.Entity.CartItems;
-import com.ecommerce.Entity.Order;
-import com.ecommerce.Entity.OrderStatus;
-import com.ecommerce.Entity.ShoppingCart;
+import com.ecommerce.Entity.*;
 import com.ecommerce.Repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.List;
 @Service
@@ -16,6 +14,19 @@ public class OrderServiceImpl implements OrderService{
     private OrderRepository orderRepository;
     @Autowired
     private CartService cartService;
+    @Autowired
+    private UserService userService;
+
+    @Override
+    public List<Order> getUserOrders(Long userId) throws AccessDeniedException {
+        CustomUser authenticatedUser = userService.getCurrentUser();
+
+        if (authenticatedUser.getUserId().equals(userId)) {
+            return (List<Order>) orderRepository.findOrderByUserId(userId);
+        } else {
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+    }
     @Override
     public Order convertCartToOrder(ShoppingCart shoppingCart) {
         if (shoppingCart == null || shoppingCart.getUser() == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
