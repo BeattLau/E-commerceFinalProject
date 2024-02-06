@@ -6,16 +6,23 @@ import lombok.Setter;
 
 import java.util.Date;
 
-@Entity @Getter @Setter
+@Entity
+@Getter
+@Setter
+@Table(name="Orders")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
+
     private Date date;
+
     @ManyToOne
-    @JoinColumn(name= "userId")
+    @JoinColumn(name= "user_id")
     private CustomUser user;
+
     private double totalValue;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 }

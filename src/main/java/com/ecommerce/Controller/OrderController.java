@@ -28,14 +28,12 @@ public class OrderController {
     @Autowired
     private UserService userService;
 
-    @PreAuthorize("userId == principal.id")
+    @PreAuthorize("#userId == principal.userId")
     @GetMapping("/orders/{userId}")
     public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) throws AccessDeniedException {
         List<Order> userOrders = orderService.getUserOrders(userId);
-
         return ResponseEntity.ok(userOrders);
     }
-
     @PostMapping("/convert-cart")
     public ResponseEntity<String> convertCartToOrder(@RequestBody ShoppingCart cart) {
         double totalValue = cart.getTotalValue();

@@ -22,7 +22,7 @@ public class OrderServiceImpl implements OrderService{
         CustomUser authenticatedUser = userService.getCurrentUser();
 
         if (authenticatedUser.getUserId().equals(userId)) {
-            return (List<Order>) orderRepository.findOrderByUserId(userId);
+            return (List<Order>) orderRepository.findOrderByUser_UserId(userId);
         } else {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
