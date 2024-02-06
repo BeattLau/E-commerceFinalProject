@@ -2,6 +2,8 @@ package com.ecommerce.Controller;
 
 import com.ecommerce.Entity.*;
 import com.ecommerce.Request.AuthRequest;
+import com.ecommerce.Response.AuthenticationResponse;
+import com.ecommerce.Response.ErrorResponse;
 import com.ecommerce.Service.JwtServiceImpl;
 import com.ecommerce.Service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -81,14 +83,16 @@ public class UserController {
                 Map<String, Object> extraClaims = new HashMap<>();
 
                 String token = jwtUtil.generateToken(customUser, extraClaims);
-                return ResponseEntity.ok().body(token);
+
+                AuthenticationResponse authResponse = new AuthenticationResponse(token);
+                return ResponseEntity.ok().body(authResponse);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid credentials"));
             }
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not found"));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authentication failed"));
         }
     }
 }

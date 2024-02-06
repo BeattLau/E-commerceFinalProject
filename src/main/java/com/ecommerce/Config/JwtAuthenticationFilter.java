@@ -68,7 +68,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-            log.info("Authorization Header: {}", authHeader);
         }
     }
 }
