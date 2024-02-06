@@ -2,8 +2,13 @@ package com.ecommerce.Response;
 
 import lombok.*;
 
-@Data @Builder
-@AllArgsConstructor @NoArgsConstructor @Getter
+@Setter
+@Getter
 public class AuthenticationResponse {
     private String token;
+
+    public AuthenticationResponse(String token) {
+        this.token = token;
+    }
+
 }
