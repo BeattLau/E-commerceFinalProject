@@ -36,9 +36,12 @@ public class CustomUser implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission)));
+        for (String permission : permissions) {
+            authorities.add(new SimpleGrantedAuthority(permission));
+        }
         return authorities;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {

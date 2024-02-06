@@ -1,5 +1,4 @@
 package com.ecommerce.Config;
-import com.ecommerce.Entity.Permission;
 import com.ecommerce.Service.MyUserDetailsService;
 import com.ecommerce.Service.UserService;
 import jakarta.servlet.FilterChain;
@@ -69,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Collection<? extends GrantedAuthority> authoritiesFromPermissions(Set<String> permissions) {
         return permissions.stream()
-                .map(permission -> new SimpleGrantedAuthority(permission))
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 }
