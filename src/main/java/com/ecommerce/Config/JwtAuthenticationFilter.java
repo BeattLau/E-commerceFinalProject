@@ -42,7 +42,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String username;
 
-        System.out.println("Authorization: " + authHeader);
 
         if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer")) {
             filterChain.doFilter(request, response);
@@ -67,7 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-        System.out.println("Authorization Header: " + authHeader);
 
     }
 }
