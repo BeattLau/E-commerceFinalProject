@@ -1,10 +1,10 @@
 package com.ecommerce.Service;
+
+import com.ecommerce.Entity.CustomUser;
+import com.ecommerce.Entity.Permission;
+import com.ecommerce.Repository.UserRepository;
 import com.ecommerce.Request.AuthRequest;
 import com.ecommerce.Request.RegisterRequest;
-import com.ecommerce.Entity.Roles;
-import com.ecommerce.Entity.CustomUser;
-import com.ecommerce.Repository.RolesRepository;
-import com.ecommerce.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +17,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class UserServiceImpl implements UserService {
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
-    private RolesRepository rolesRepository;
-    @Autowired @Lazy
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
 
     @Override
     public CustomUser getCurrentUser() {
@@ -49,71 +54,61 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Roles saveRoles(Roles roles) {
-        log.info("Saving new role {} to the database", roles.getRoleName());
-        return rolesRepository.save(roles);
-    }
-
-    @Override
-    public void addRoleToUser(String username, String roleName) {
-        log.info("Adding role {} to user{}", roleName, username);
-        CustomUser user = userRepository.findByUsername(username);
-        Roles role = rolesRepository.findByRoleName(roleName);
-        user.getRoles().add(role);
-    }
-    @Override
     public CustomUser getUser(String username) {
         log.info("Fetching user {}", username);
         return userRepository.findByUsername(username);
     }
+
     @Override
     public List<CustomUser> getUsers() {
         log.info("Fetching all users");
         return userRepository.findAll();
     }
+
     @Override
     public CustomUser registerUser(RegisterRequest registerRequest) {
         log.info("Registering new user {}", registerRequest.getUsername());
         CustomUser user = new CustomUser();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        Roles userRole = rolesRepository.findByRoleName("ROLE_ADMIN");
-        user.setRoles(Collections.singleton(userRole));
+        Set<String> customerPermissions = getCustomerPermissions();
+        user.setPermissions(customerPermissions);
+
         userRepository.save(user);
         return user;
     }
 
+    private Set<String> getCustomerPermissions() {
+        Set<Permission.RolePermission> rolePermissions = Permission.getRolePermissions(Permission.Role.CUSTOMER);
+        Set<String> customerPermissions = new HashSet<>();
+        for (Permission.RolePermission rolePermission : rolePermissions) {
+            customerPermissions.addAll(rolePermission.getPermissions());
+        }
+        return customerPermissions;
+    }
     @Override
     public CustomUser loginUser(AuthRequest authRequest) {
         log.info("Logging in user {}", authRequest.getUsername());
         CustomUser user = userRepository.findByUsername(authRequest.getUsername());
-        if (user != null) {
-            if (passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
-                log.info("User logged in: " + user.getUsername());
-                return user;
-            } else {
-                log.warn("Invalid password for user: " + user.getUsername());
-            }
+        if (user != null && passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
+            return user;
         } else {
-            log.warn("User not found: " + authRequest.getUsername());
+            return null;
         }
-        return null;
     }
-
     @Override
-    public UserDetailsService MyUserDetailService() {
-        return this::getUser;
-    }
-
-    @Override
-    public Set<Roles> getRolesByUsername(String username) {
-        Optional<CustomUser> customUserOptional = Optional.ofNullable(userRepository.findByUsername(username));
-
-        if (customUserOptional.isPresent()) {
-            CustomUser customUser = customUserOptional.get();
-            return customUser.getRoles();
+    public Set<String> getPermissionsByUsername(String username) {
+        CustomUser user = userRepository.findByUsername(username);
+        if (user != null) {
+            return user.getPermissions();
         } else {
             return Collections.emptySet();
         }
     }
+
+    @Override
+    public UserDetailsService getUserDetailService() {
+        return myUserDetailsService;
+    }
+
 }

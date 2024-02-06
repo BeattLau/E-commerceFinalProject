@@ -1,5 +1,5 @@
 package com.ecommerce.Config;
-import com.ecommerce.Entity.Roles;
+import com.ecommerce.Entity.Permission;
 import com.ecommerce.Service.MyUserDetailsService;
 import com.ecommerce.Service.UserService;
 import jakarta.servlet.FilterChain;
@@ -10,7 +10,6 @@ import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -20,7 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,20 +51,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.isNotEmpty(username)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Set<Roles> roles = userService.getRolesByUsername(username);
+            Set<String> permissions = userService.getPermissionsByUsername(username);
 
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,
                     null,
-                    userDetails.getAuthorities());
+                    authoritiesFromPermissions(permissions));
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);
+    }
 
+    private Collection<? extends GrantedAuthority> authoritiesFromPermissions(Set<String> permissions) {
+        return permissions.stream()
+                .map(permission -> new SimpleGrantedAuthority(permission))
+                .collect(Collectors.toList());
     }
 }

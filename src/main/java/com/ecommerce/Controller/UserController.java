@@ -24,7 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController @RequiredArgsConstructor
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class UserController {
 
@@ -36,13 +37,13 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 
     @GetMapping("/users")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<CustomUser>> getUsers() {
         return ResponseEntity.ok().body(userServiceImpl.getUsers());
     }
 
     @PostMapping("/user/save")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CustomUser> saveUser(@RequestBody CustomUser user) {
         CustomUser savedUser = userServiceImpl.saveUser(user);
         URI location = ServletUriComponentsBuilder
@@ -51,25 +52,6 @@ public class UserController {
                 .buildAndExpand(savedUser.getUserId())
                 .toUri();
         return ResponseEntity.created(location).body(savedUser);
-    }
-
-    @PostMapping("/user/role")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Roles> saveRole(@RequestBody Roles roles) {
-        Roles savedRole = userServiceImpl.saveRoles(roles);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedRole.getRoleId())
-                .toUri();
-        return ResponseEntity.created(location).body(savedRole);
-    }
-
-    @PostMapping("/user/addRoleToUser")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserForm form) {
-        userServiceImpl.addRoleToUser(form.getUsername(), form.getRoleName());
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/user-login")
