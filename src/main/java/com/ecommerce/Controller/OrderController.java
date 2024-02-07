@@ -4,7 +4,6 @@ import com.ecommerce.Entity.CustomUser;
 import com.ecommerce.Entity.Order;
 import com.ecommerce.Entity.OrderStatus;
 import com.ecommerce.Entity.ShoppingCart;
-import com.ecommerce.Service.CartService;
 import com.ecommerce.Service.OrderService;
 import com.ecommerce.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +23,6 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     @Autowired
-    private CartService cartService;
-    @Autowired
     private UserService userService;
 
     @PreAuthorize("#userId == principal.userId")
@@ -36,19 +33,12 @@ public class OrderController {
     }
     @PostMapping("/convert-cart")
     public ResponseEntity<String> convertCartToOrder(@RequestBody ShoppingCart cart) {
-        double totalValue = cart.getTotalValue();
-
-        Order order = new Order();
-        order.setUser(cart.getUser());
-        order.setTotalValue(totalValue);
-        order.setStatus(OrderStatus.PENDING);
-
-        cart.getCartItems().forEach(item -> item.setPurchased(true));
-
-        orderService.placeOrder(order);
-        cartService.saveCart(cart);
-
-        return ResponseEntity.ok("Order placed successfully");
+        Order order = orderService.convertCartToOrder(cart);
+        if (order != null) {
+            return ResponseEntity.ok(order.toString());
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
