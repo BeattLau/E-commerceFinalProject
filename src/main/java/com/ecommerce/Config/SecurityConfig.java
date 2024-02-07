@@ -44,12 +44,18 @@ public class SecurityConfig {
                                 "/api/v1/products", "/api/v1/products/update/", "/api/v1/products/delete/")
                         .hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers("/api/v1/cart/**").hasRole("CUSTOMER")
+                        .requestMatchers("/admin").hasAuthority("ADMIN")
+                        .requestMatchers("/cart", "/cart/delete").authenticated()
+                        .requestMatchers("/orders/{userId}", "/convert-cart", "/orders/{orderId}", "/orders/{orderId}/status/{newStatus}", "/order-history", "/orders/{orderId}").authenticated()
+                        .requestMatchers("/products", "/products/{productName}", "/products/{productId}", "/products", "/products/update/{productId}", "/products/delete/{productId}").authenticated()
+                        .requestMatchers("/users", "/user/save").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
