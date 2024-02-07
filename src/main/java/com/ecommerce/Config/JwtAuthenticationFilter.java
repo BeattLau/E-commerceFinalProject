@@ -1,6 +1,4 @@
 package com.ecommerce.Config;
-import com.ecommerce.Entity.Roles;
-import com.ecommerce.Service.JwtServiceImpl;
 import com.ecommerce.Service.MyUserDetailsService;
 import com.ecommerce.Service.UserService;
 import io.jsonwebtoken.JwtException;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -24,7 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
+        final String username;
+
 
         if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer")) {
             filterChain.doFilter(request, response);
@@ -54,20 +53,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.isNotEmpty(username)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
+            Set<String> permissions = userService.getPermissionsByUsername(username);
 
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                Set<GrantedAuthority> authorities = (Set<GrantedAuthority>) userDetails.getAuthorities();
-
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    authoritiesFromPermissions(permissions));
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+              
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-
-            filterChain.doFilter(request, response);
         }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private Collection<? extends GrantedAuthority> authoritiesFromPermissions(Set<String> permissions) {
+        return permissions.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
     }
 }

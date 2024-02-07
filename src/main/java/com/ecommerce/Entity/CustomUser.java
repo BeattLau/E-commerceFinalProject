@@ -1,21 +1,17 @@
 package com.ecommerce.Entity;
+
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.*;
 
 @Entity
-@Builder
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
+@Getter
+@Setter
 public class CustomUser implements UserDetails {
 
     @Id
@@ -29,13 +25,10 @@ public class CustomUser implements UserDetails {
 
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Roles> roles;
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "permission")
+    private Set<String> permissions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<ShoppingCart> shoppingCart = new ArrayList<>();
@@ -43,7 +36,9 @@ public class CustomUser implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+        for (String permission : permissions) {
+            authorities.add(new SimpleGrantedAuthority(permission));
+        }
         return authorities;
     }
 
@@ -88,10 +83,9 @@ public class CustomUser implements UserDetails {
         return this;
     }
 
-  public CustomUser setRoles(Set<Roles> roles) {
-      this.roles = roles;
+    public CustomUser setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
         return this;
     }
-
 
 }

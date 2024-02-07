@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
-@Table(name="shoppingCart")
+@Table(name="shopping_cart")
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -16,15 +18,17 @@ public class ShoppingCart {
     private Long cartId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private CustomUser user;
 
     @ManyToOne
-    @JoinColumn(name = "productId", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Products product;
 
     private int quantity;
     private double totalValue;
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
+    private List<CartItems> cartItems;
 
     public void calculateTotalValue() {
         if (product != null) {
