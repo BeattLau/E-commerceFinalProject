@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
     public CustomUser registerUser(RegisterRequest registerRequest) {
         log.info("Registering new user {}", registerRequest.getUsername());
         CustomUser user = new CustomUser();
+        user.setName(registerRequest.getName());
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         Set<String> userPermissions = determineUserPermissions(registerRequest.getRole());
