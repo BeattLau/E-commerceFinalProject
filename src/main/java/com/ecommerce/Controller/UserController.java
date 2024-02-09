@@ -34,7 +34,7 @@ public class UserController {
     @Autowired
     private JwtServiceImpl jwtUtil;
     @Autowired
-    private AuthenticationManager authenticationManager;
+   private AuthenticationManager authenticationManager;
 
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -76,5 +76,6 @@ public class UserController {
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authentication failed"));
         }
+
     }
 }

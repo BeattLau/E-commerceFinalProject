@@ -71,21 +71,25 @@ public class UserServiceImpl implements UserService {
         CustomUser user = new CustomUser();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        Set<String> customerPermissions = getCustomerPermissions();
-        user.setPermissions(customerPermissions);
+        Set<String> userPermissions = determineUserPermissions(registerRequest.getRole());
+        user.setPermissions(userPermissions);
 
         userRepository.save(user);
         return user;
     }
 
-    private Set<String> getCustomerPermissions() {
-        Set<Permission.RolePermission> rolePermissions = Permission.getRolePermissions(Permission.Role.CUSTOMER);
-        Set<String> customerPermissions = new HashSet<>();
-        for (Permission.RolePermission rolePermission : rolePermissions) {
-            customerPermissions.addAll(rolePermission.getPermissions());
+    private Set<String> determineUserPermissions(String role) {
+        switch (role) {
+            case "ADMIN":
+                return Permission.getRolePermissions(Permission.Role.ADMIN).iterator().next().getPermissions();
+            case "SELLER":
+                return Permission.getRolePermissions(Permission.Role.SELLER).iterator().next().getPermissions();
+            case "CUSTOMER":
+            default:
+                return Permission.getRolePermissions(Permission.Role.CUSTOMER).iterator().next().getPermissions();
         }
-        return customerPermissions;
     }
+
     @Override
     public CustomUser loginUser(AuthRequest authRequest) {
         log.info("Logging in user {}", authRequest.getUsername());

@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.Set;
 
 @Entity
@@ -28,8 +29,6 @@ public class Permission {
         }
     }
 
-
-    // Define CRUD permissions
     private static final RolePermission ADMIN_PERMISSIONS = new RolePermission
             (Role.ADMIN, Set.of("CREATE", "READ", "UPDATE", "DELETE", "MANAGE_USERS", "MANAGE_PRODUCTS", "VIEW_REPORTS"));
     private static final RolePermission CUSTOMER_PERMISSIONS = new RolePermission
@@ -38,8 +37,8 @@ public class Permission {
             (Role.SELLER, Set.of("CREATE", "READ", "UPDATE", "DELETE", "MANAGE_PRODUCTS", "ADD_PRODUCTS", "UPDATE_PRODUCTS", "DELETE_PRODUCTS"));
 
     public static boolean hasPermission(Role role, String permission) {
-        for (RolePermission rolePermission : getRolePermissions(Role.CUSTOMER)) {
-            if (rolePermission.getRole() == role && rolePermission.getPermissions().contains(permission)) {
+        for (RolePermission rolePermission : getRolePermissions(role)) {
+            if (rolePermission.getPermissions().contains(permission)) {
                 return true;
             }
         }
@@ -47,6 +46,15 @@ public class Permission {
     }
 
     public static Set<RolePermission> getRolePermissions(Role role) {
-        return Set.of(ADMIN_PERMISSIONS, CUSTOMER_PERMISSIONS, SELLER_PERMISSIONS);
+        switch (role) {
+            case ADMIN:
+                return Set.of(ADMIN_PERMISSIONS);
+            case CUSTOMER:
+                return Set.of(CUSTOMER_PERMISSIONS);
+            case SELLER:
+                return Set.of(SELLER_PERMISSIONS);
+            default:
+                return Collections.emptySet();
+        }
     }
 }

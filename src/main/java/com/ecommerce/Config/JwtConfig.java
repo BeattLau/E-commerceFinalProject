@@ -1,14 +1,22 @@
 package com.ecommerce.Config;
 
+import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Component @Getter @Setter
-@ConfigurationProperties(prefix ="jwt")
+import javax.crypto.SecretKey;
+
+@Configuration
+@Getter
+@Setter
 public class JwtConfig {
-
-    private String secret;
+@Value("${jwt.expiration}")
     private int expiration;
+    @Bean
+    public SecretKey secretKey() {
+        return Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
+    }
 }
