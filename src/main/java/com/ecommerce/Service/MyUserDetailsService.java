@@ -1,6 +1,7 @@
 package com.ecommerce.Service;
 
 import com.ecommerce.Entity.CustomUser;
+import com.ecommerce.Entity.CustomUserDetails;
 import com.ecommerce.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,13 +29,8 @@ public class MyUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        List<SimpleGrantedAuthority> authorities = user.getPermissions().stream()
-                .map(permission -> new SimpleGrantedAuthority(permission))
-                .collect(Collectors.toList());
-
-        return new User(user.getUsername(), user.getPassword(), authorities);
+        return user;
     }
-
     public String addUser(CustomUser customUser) {
         userRepository.save(customUser);
         return "User Added Successfully";

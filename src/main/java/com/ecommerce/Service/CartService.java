@@ -13,7 +13,7 @@ import java.util.List;
 public interface CartService {
     List<Products> getCartContents() throws UserNotFoundException;
 
-    List<Products> addProductToCart(Long productId, CustomUser currentUser) throws UserNotFoundException;
+    List<Products> addProductToCart(Long productId, String username);
 
     void deleteProductFromCart(Long productId, Long userId) throws ProductNotFoundException;
 

@@ -28,24 +28,22 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(request -> request
                         .requestMatchers("/api/v1/login", "/api/v1/register").permitAll()
-                        .requestMatchers(
-                                "/api/v1/products/name/{name}", "/api/v1/products/id/{productId}").permitAll()
-                        .requestMatchers(
-                                "/api/v1/products", "/api/v1/products/update/", "/api/v1/products/delete/")
-                        .hasAnyRole("ADMIN", "SELLER")
-                        .requestMatchers("/api/v1/cart/**").hasRole("CUSTOMER")
                         .requestMatchers("/admin").hasAuthority("ADMIN")
-                        .requestMatchers("/cart", "/cart/delete").authenticated()
+                        .requestMatchers("/users", "/user/save", "/user-login").hasAuthority("ADMIN")
+                        .requestMatchers(
+                                "/api/v1/products/name/{name}", "/api/v1/products/id/{productId}", "/api/v1/products/all").permitAll()
+                        .requestMatchers(
+                                "/api/v1/products/add", "/api/v1/products/update/", "/api/v1/products/delete/")
+                        .hasAnyRole("ADMIN", "SELLER")
+                        .requestMatchers("/products/all", "/products/{productName}", "/products/{productId}", "/products/add", "/products/update/{productId}", "/products/delete/{productId}").authenticated()
+                        .requestMatchers("/api/v1/cart/contents", "/api/v1/cart/add/{productId}", "/api/v1/cart/delete").authenticated()
                         .requestMatchers("/orders/{userId}", "/convert-cart", "/orders/{orderId}", "/orders/{orderId}/status/{newStatus}", "/order-history", "/orders/{orderId}").authenticated()
-                        .requestMatchers("/products", "/products/{productName}", "/products/{productId}", "/products", "/products/update/{productId}", "/products/delete/{productId}").authenticated()
-                        .requestMatchers("/users", "/user/save").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

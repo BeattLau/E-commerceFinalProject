@@ -24,19 +24,32 @@ public class CartController {
 
     @Autowired
     CartService cartService;
+    @GetMapping("/cart/contents")
+    public ResponseEntity<List<Products>> getCartContents() {
+        try {
+            List<Products> cartContents = cartService.getCartContents();
+            if (cartContents.isEmpty()) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.ok(cartContents);
+            }
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
-    @PostMapping("/cart")
-    public ResponseEntity<List<Products>> addProductToCart(@RequestBody Products products, @RequestParam Long productId) {
+    @PostMapping("/cart/add/{productId}")
+    public ResponseEntity<List<Products>> addProductToCart(@PathVariable Long productId) {
         try {
             CustomUser currentUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            List<Products> addedProducts = cartService.addProductToCart(productId, currentUser);
+            List<Products> addedProducts = cartService.addProductToCart(productId, currentUser.getUsername());
             return ResponseEntity.ok(addedProducts);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-        } catch (UserNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
+
+
 
 
     @DeleteMapping("/cart/delete")

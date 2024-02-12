@@ -2,18 +2,16 @@ package com.ecommerce.Controller;
 
 import com.ecommerce.Request.ProductRequest;
 import com.ecommerce.Service.ProductsService;
-import com.ecommerce.Service.ProductsServiceImpl;
 import com.ecommerce.Entity.Products;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,22 +19,22 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductsService productsService;
-
-    @GetMapping("/products")
+    @GetMapping("/products/all")
     public ResponseEntity<Page<Products>> getAllProducts(Pageable pageable) {
-        return ResponseEntity.ok().body(productsService.getAllProducts((org.springframework.data.domain.Pageable) pageable));
+        return ResponseEntity.ok().body(productsService.getAllProducts(pageable));
     }
 
-    @GetMapping("/products/{productName}")
-    public ResponseEntity<Products> getProductByProductName(@PathVariable Long productName) {
-        Products product = productsService.getProductByProductName(String.valueOf(productName));
+    @GetMapping("/products/name/{productName}")
+    public ResponseEntity<Products> getProductByProductName(@PathVariable String productName) {
+        Products product = productsService.getProductByProductName(productName);
         if (product != null) {
             return ResponseEntity.ok(product);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/products/{productId}")
+
+    @GetMapping("/products/id/{productId}")
     public ResponseEntity<Products> getProductById(@PathVariable Long productId) {
         Products product = productsService.getProductByProductId(String.valueOf(productId));
         if (product != null) {
@@ -45,7 +43,8 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/products")
+
+    @PostMapping("/products/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public ResponseEntity<Products>addProduct(@RequestBody ProductRequest productRequest){
         try {

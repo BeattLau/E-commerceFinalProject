@@ -32,7 +32,7 @@ public class Permission {
     private static final RolePermission ADMIN_PERMISSIONS = new RolePermission
             (Role.ADMIN, Set.of("CREATE", "READ", "UPDATE", "DELETE", "MANAGE_USERS", "MANAGE_PRODUCTS", "VIEW_REPORTS"));
     private static final RolePermission CUSTOMER_PERMISSIONS = new RolePermission
-            (Role.CUSTOMER, Set.of("READ", "VIEW_PRODUCTS","ADD_PRODUCTS_TO_CART","REMOVE_PRODUCTS_FROM_CART", "VIEW_SHOPPING_CART", "PLACE_ORDER", "VIEW_ORDERS"));
+            (Role.CUSTOMER, Set.of("READ", "VIEW_PRODUCTS","ADD_PRODUCTS_TO_CART","DELETE_PRODUCTS_FROM_CART", "VIEW_SHOPPING_CART", "PLACE_ORDER", "VIEW_ORDERS"));
     private static final RolePermission SELLER_PERMISSIONS = new RolePermission
             (Role.SELLER, Set.of("CREATE", "READ", "UPDATE", "DELETE", "MANAGE_PRODUCTS", "ADD_PRODUCTS", "UPDATE_PRODUCTS", "DELETE_PRODUCTS"));
 
