@@ -1,5 +1,6 @@
 package com.ecommerce.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class ShoppingCart {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private CustomUser user;
 
     @ManyToOne
