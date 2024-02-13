@@ -15,9 +15,12 @@ public interface CartService {
 
     List<Products> addProductToCart(Long productId, String username);
 
-    void deleteProductFromCart(Long productId, Long userId) throws ProductNotFoundException;
+    void deleteProductFromCart(String username, Long productId) throws ProductNotFoundException;
 
     void saveCart(ShoppingCart shoppingCart);
+
+    public ShoppingCart findCartByCartId(Long cartId);
+    public ShoppingCart findCartByUserId(Long userId);
 }
 
 

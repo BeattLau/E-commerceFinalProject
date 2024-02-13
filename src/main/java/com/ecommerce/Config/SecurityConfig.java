@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 "/api/v1/products/add", "/api/v1/products/update/", "/api/v1/products/delete/")
                         .hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers("/products/all", "/products/{productName}", "/products/{productId}", "/products/add", "/products/update/{productId}", "/products/delete/{productId}").authenticated()
-                        .requestMatchers("/api/v1/cart/contents", "/api/v1/cart/add/{productId}", "/api/v1/cart/delete").authenticated()
+                        .requestMatchers("/api/v1/cart/contents", "/api/v1/cart/add/{productId}", "/api/v1/cart/delete/{productId}").authenticated()
                         .requestMatchers("/orders/{userId}", "/convert-cart", "/orders/{orderId}", "/orders/{orderId}/status/{newStatus}", "/order-history", "/orders/{orderId}").authenticated()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

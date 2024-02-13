@@ -18,39 +18,33 @@ public class OrderServiceImpl implements OrderService{
     private UserService userService;
 
     @Override
-    public List<Order> getUserOrders(Long userId) throws AccessDeniedException {
+    public Order generateOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException {
         CustomUser authenticatedUser = userService.getCurrentUser();
 
-        if (authenticatedUser.getUserId().equals(userId)) {
-            return (List<Order>) orderRepository.findOrderByUser_UserId(userId);
-        } else {
+        if (!authenticatedUser.equals(shoppingCart.getUser())) {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
-    }
-    @Override
-    public Order convertCartToOrder(ShoppingCart shoppingCart) {
-        if (shoppingCart == null || shoppingCart.getUser() == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
-            return null;
+
+        if (shoppingCart == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
+            throw new IllegalArgumentException("Shopping cart is empty");
         }
-        double totalValue = shoppingCart.getCartItems().stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
-
+        double totalValue = calculateTotalPrice(shoppingCart.getCartItems());
         shoppingCart.getCartItems().forEach(item -> item.setPurchased(true));
-
         Order order = new Order();
         order.setUser(shoppingCart.getUser());
         order.setTotalValue(totalValue);
         order.setStatus(OrderStatus.PENDING);
+        order.setDate(new Date());
 
         orderRepository.save(order);
 
+        // Save the shopping cart
         cartService.saveCart(shoppingCart);
 
         return order;
     }
-    @Override
-    public double calculateTotalValue(List<CartItems> items) {
+@Override
+public double calculateTotalPrice(List<CartItems> items) {
         return items.stream()
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())
                 .sum();

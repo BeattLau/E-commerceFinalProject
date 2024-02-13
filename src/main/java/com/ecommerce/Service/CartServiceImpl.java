@@ -17,11 +17,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
+@Service @Transactional
 public class CartServiceImpl implements CartService {
 
     @Autowired
@@ -41,19 +42,26 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    @Override @Transactional
+    @Override
     public List<Products> getCartContents() throws UserNotFoundException {
         CustomUser user = getCurrentUser();
         Hibernate.initialize(user.getShoppingCart());
-        return user.getShoppingCart().stream()
-                .map(ShoppingCart::getProduct)
-                .collect(Collectors.toList());
-    }
 
+        List<Products> productsInCart = new ArrayList<>();
+        for (ShoppingCart shoppingCart : user.getShoppingCart()) {
+            if (shoppingCart.getCartItems() != null) {
+                for (CartItems cartItem : shoppingCart.getCartItems()) {
+                    productsInCart.add(cartItem.getProducts());
+                }
+            }
+        }
+        return productsInCart;
+    }
 
     @Override
     public List<Products> addProductToCart(Long productId, String username) {
         CustomUser user = userRepository.findByUsername(username);
+
         Products productToAdd = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
 
@@ -62,38 +70,76 @@ public class CartServiceImpl implements CartService {
                 .findFirst()
                 .orElse(new ShoppingCart());
 
-        CartItems cartItem = new CartItems();
-        cartItem.setShoppingCart(shoppingCart);
-        cartItem.setProducts(productToAdd);
-        cartItem.setQuantity(1);
-        cartItem.setPrice(productToAdd.getPrice());
-        cartItem.setPurchased(false);
-        cartItem.setOrder(null);
-        shoppingCart.getCartItems().add(cartItem);
+        if (shoppingCart.getCartItems() == null) {
+            shoppingCart.setCartItems(new ArrayList<>());
+        }
 
-        user.getShoppingCart().add(shoppingCart);
+        Optional<CartItems> existingCartItemOptional = shoppingCart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getProducts().getProductId().equals(productId))
+                .findFirst();
+
+        if (existingCartItemOptional.isPresent()) {
+            CartItems existingCartItem = existingCartItemOptional.get();
+            existingCartItem.setQuantity(existingCartItem.getQuantity() + 1);
+            existingCartItem.setPrice(existingCartItem.getProducts().getPrice() * existingCartItem.getQuantity());
+        } else {
+            CartItems cartItem = new CartItems();
+            cartItem.setShoppingCart(shoppingCart);
+            cartItem.setProducts(productToAdd);
+            cartItem.setQuantity(1);
+            cartItem.setPrice(productToAdd.getPrice());
+            cartItem.setPurchased(false);
+            cartItem.setOrder(null);
+            shoppingCart.getCartItems().add(cartItem);
+        }
+        if (user.getShoppingCart().isEmpty()) {
+            user.getShoppingCart().add(shoppingCart);
+        }
         userRepository.save(user);
-        return Collections.singletonList(productToAdd);
+
+        return user.getShoppingCart().stream()
+                .flatMap(cart -> cart.getCartItems().stream().map(CartItems::getProducts))
+                .collect(Collectors.toList());
     }
 
-
     @Override
-    public void deleteProductFromCart(Long productId, Long userId) throws ProductNotFoundException {
-        CustomUser user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-
+    public void deleteProductFromCart(String username, Long productId) throws ProductNotFoundException {
+        CustomUser user = userRepository.findByUsername(username);
         Products productToRemove = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product with ID " + productId + " not found"));
 
-        if (user.getShoppingCart().remove(productToRemove)) {
-            userRepository.save(user);
-        } else {
-            throw new ProductNotFoundException("Product with ID " + productId + " not found in the user's cart");
+        ShoppingCart userShoppingCart = user.getShoppingCart()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ProductNotFoundException("Shopping cart not found for user"));
+
+        CartItems cartItemToRemove = null;
+        for (CartItems cartItem : userShoppingCart.getCartItems()) {
+            if (cartItem.getProducts().getProductId().equals(productId)) {
+                cartItemToRemove = cartItem;
+                break;
+            }
+        }
+        if (cartItemToRemove != null) {
+            userShoppingCart.getCartItems().remove(cartItemToRemove);
+            cartRepository.save(userShoppingCart);
         }
     }
 
     @Override
     public void saveCart(ShoppingCart shoppingCart) {
+    }
 
+    @Override
+    public ShoppingCart findCartByCartId(Long cartId) {
+        return cartRepository.findById(cartId)
+                .orElse(null);
+    }
+
+    @Override
+    public ShoppingCart findCartByUserId(Long userId) {
+        return (ShoppingCart) userRepository.findById(userId)
+                .map(CustomUser::getShoppingCart)
+                .orElse(null);
     }
 }

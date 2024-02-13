@@ -8,6 +8,7 @@ import com.ecommerce.Service.OrderService;
 import com.ecommerce.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,18 +27,17 @@ public class OrderController {
     private UserService userService;
 
     @PreAuthorize("#userId == principal.userId")
-    @GetMapping("/orders/{userId}")
-    public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) throws AccessDeniedException {
-        List<Order> userOrders = orderService.getUserOrders(userId);
-        return ResponseEntity.ok(userOrders);
-    }
-    @PostMapping("/convert-cart")
-    public ResponseEntity<String> convertCartToOrder(@RequestBody ShoppingCart cart) {
-        Order order = orderService.convertCartToOrder(cart);
-        if (order != null) {
-            return ResponseEntity.ok(order.toString());
-        } else {
-            return ResponseEntity.badRequest().build();
+    @PostMapping("/generate-from-cart")
+    public ResponseEntity<?> generateOrderFromCart(@RequestBody ShoppingCart shoppingCart) {
+        try {
+            Order order = orderService.generateOrderFromCart(shoppingCart);
+            return ResponseEntity.ok(order);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to generate order");
         }
     }
     @GetMapping("/orders/{orderId}")

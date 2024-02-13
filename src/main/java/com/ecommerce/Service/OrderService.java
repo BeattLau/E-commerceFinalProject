@@ -9,9 +9,8 @@ import java.util.List;
 
 @Service
 public interface OrderService {
-    List<Order> getUserOrders(Long userId) throws AccessDeniedException;
-    Order convertCartToOrder(ShoppingCart shoppingCart);
-    double calculateTotalValue(List<CartItems> items);
+    Order generateOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException;
+    double calculateTotalPrice(List<CartItems> items);
     List<Order> getAllOrders();
     Order getOrderById(Long orderId);
     Order getOrderByDate(Date date);
