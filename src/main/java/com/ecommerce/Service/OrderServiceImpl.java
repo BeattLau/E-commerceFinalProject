@@ -37,8 +37,7 @@ public class OrderServiceImpl implements OrderService{
         order.setDate(new Date());
 
         orderRepository.save(order);
-
-        // Save the shopping cart
+        
         cartService.saveCart(shoppingCart);
 
         return order;

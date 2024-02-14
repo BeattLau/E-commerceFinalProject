@@ -26,7 +26,6 @@ public class OrderController {
     @Autowired
     private UserService userService;
 
-    @PreAuthorize("#userId == principal.userId")
     @PostMapping("/generate-from-cart")
     public ResponseEntity<?> generateOrderFromCart(@RequestBody ShoppingCart shoppingCart) {
         try {
