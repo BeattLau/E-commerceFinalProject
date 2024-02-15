@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 public interface OrderService {
-    Order generateOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException;
+    Order placeOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException;
     double calculateTotalPrice(List<CartItems> items);
     List<Order> getAllOrders();
     Order getOrderById(Long orderId);

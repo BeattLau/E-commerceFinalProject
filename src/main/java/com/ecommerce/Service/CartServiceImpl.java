@@ -48,11 +48,10 @@ public class CartServiceImpl implements CartService {
         Hibernate.initialize(user.getShoppingCart());
 
         List<Products> productsInCart = new ArrayList<>();
-        for (ShoppingCart shoppingCart : user.getShoppingCart()) {
-            if (shoppingCart.getCartItems() != null) {
-                for (CartItems cartItem : shoppingCart.getCartItems()) {
-                    productsInCart.add(cartItem.getProducts());
-                }
+        ShoppingCart shoppingCart = user.getShoppingCart();
+        if (shoppingCart != null && shoppingCart.getCartItems() != null) {
+            for (CartItems cartItem : shoppingCart.getCartItems()) {
+                productsInCart.add(cartItem.getProducts());
             }
         }
         return productsInCart;
@@ -65,16 +64,19 @@ public class CartServiceImpl implements CartService {
         Products productToAdd = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
 
-        ShoppingCart shoppingCart = user.getShoppingCart()
-                .stream()
-                .findFirst()
-                .orElse(new ShoppingCart());
-
-        if (shoppingCart.getCartItems() == null) {
-            shoppingCart.setCartItems(new ArrayList<>());
+        ShoppingCart shoppingCart = user.getShoppingCart();
+        if (shoppingCart == null) {
+            shoppingCart = new ShoppingCart();
+            shoppingCart.setUser(user);
         }
 
-        Optional<CartItems> existingCartItemOptional = shoppingCart.getCartItems().stream()
+        List<CartItems> cartItemsList = shoppingCart.getCartItems();
+        if (cartItemsList == null) {
+            cartItemsList = new ArrayList<>();
+            shoppingCart.setCartItems(cartItemsList);
+        }
+
+        Optional<CartItems> existingCartItemOptional = cartItemsList.stream()
                 .filter(cartItem -> cartItem.getProducts().getProductId().equals(productId))
                 .findFirst();
 
@@ -90,15 +92,12 @@ public class CartServiceImpl implements CartService {
             cartItem.setPrice(productToAdd.getPrice());
             cartItem.setPurchased(false);
             cartItem.setOrder(null);
-            shoppingCart.getCartItems().add(cartItem);
-        }
-        if (user.getShoppingCart().isEmpty()) {
-            user.getShoppingCart().add(shoppingCart);
+            cartItemsList.add(cartItem);
         }
         userRepository.save(user);
 
-        return user.getShoppingCart().stream()
-                .flatMap(cart -> cart.getCartItems().stream().map(CartItems::getProducts))
+        return cartItemsList.stream()
+                .map(CartItems::getProducts)
                 .collect(Collectors.toList());
     }
 
@@ -108,20 +107,24 @@ public class CartServiceImpl implements CartService {
         Products productToRemove = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product with ID " + productId + " not found"));
 
-        ShoppingCart userShoppingCart = user.getShoppingCart()
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new ProductNotFoundException("Shopping cart not found for user"));
+        ShoppingCart userShoppingCart = user.getShoppingCart();
+        if (userShoppingCart == null) {
+            throw new ProductNotFoundException("Shopping cart not found for user");
+        }
 
         CartItems cartItemToRemove = null;
-        for (CartItems cartItem : userShoppingCart.getCartItems()) {
-            if (cartItem.getProducts().getProductId().equals(productId)) {
-                cartItemToRemove = cartItem;
-                break;
+        List<CartItems> cartItems = userShoppingCart.getCartItems();
+        if (cartItems != null) {
+            for (CartItems cartItem : cartItems) {
+                if (cartItem.getProducts().getProductId().equals(productId)) {
+                    cartItemToRemove = cartItem;
+                    break;
+                }
             }
         }
+
         if (cartItemToRemove != null) {
-            userShoppingCart.getCartItems().remove(cartItemToRemove);
+            cartItems.remove(cartItemToRemove);
             cartRepository.save(userShoppingCart);
         }
     }
@@ -142,4 +145,16 @@ public class CartServiceImpl implements CartService {
                 .map(CustomUser::getShoppingCart)
                 .orElse(null);
     }
+
+    @Override
+    public ShoppingCart getCartForUser(CustomUser currentUser) {
+        return null;
+    }
+
+    @Override
+    public void clearCart(CustomUser currentUser) {
+
+    }
 }
+
+

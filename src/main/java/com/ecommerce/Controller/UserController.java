@@ -36,13 +36,13 @@ public class UserController {
     @Autowired
    private AuthenticationManager authenticationManager;
 
-    @GetMapping("/users")
+    @GetMapping("/users/all")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<CustomUser>> getUsers() {
         return ResponseEntity.ok().body(userServiceImpl.getUsers());
     }
 
-    @PostMapping("/user/save")
+    @PostMapping("/users/save")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CustomUser> saveUser(@RequestBody CustomUser user) {
         CustomUser savedUser = userServiceImpl.saveUser(user);
@@ -54,7 +54,7 @@ public class UserController {
         return ResponseEntity.created(location).body(savedUser);
     }
 
-    @PostMapping("/user-login")
+    @PostMapping("/users/user-login")
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(

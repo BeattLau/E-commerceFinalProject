@@ -1,7 +1,5 @@
 package com.ecommerce.Entity;
 
-import com.ecommerce.Repository.UserRepository;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,9 +15,8 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cartId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     private CustomUser user;
 
     private int quantity;

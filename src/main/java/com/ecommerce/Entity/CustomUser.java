@@ -30,8 +30,8 @@ public class CustomUser implements UserDetails {
     @Column(name = "permission")
     private Set<String> permissions;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private final List<ShoppingCart> shoppingCart = new ArrayList<>();
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private ShoppingCart shoppingCart;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -4,6 +4,7 @@ import com.ecommerce.Entity.CustomUser;
 import com.ecommerce.Entity.Products;
 import com.ecommerce.Entity.ShoppingCart;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
+import com.ecommerce.ExceptionHandler.ShoppingCartNotFoundException;
 import com.ecommerce.ExceptionHandler.UserNotFoundException;
 import com.ecommerce.Service.CartService;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,7 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,13 +42,21 @@ public class CartController {
         }
     }
     @PostMapping("/cart/add/{productId}")
-    public ResponseEntity<List<Products>> addProductToCart(@PathVariable Long productId) {
+    public ResponseEntity<Map<String, Object>> addProductToCart(@PathVariable Long productId) {
         try {
             CustomUser currentUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             List<Products> addedProducts = cartService.addProductToCart(productId, currentUser.getUsername());
-            return ResponseEntity.ok(addedProducts);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Item successfully added to cart");
+            response.put("addedProducts", addedProducts);
+
+            return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyMap());
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (ProductNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
     @DeleteMapping("/cart/delete/{productId}")
@@ -56,9 +67,13 @@ public class CartController {
             return ResponseEntity.ok("Product removed from the cart successfully");
         } catch (ProductNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (ShoppingCartNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
-    @GetMapping("/by-cart-id/{cartId}")
+    @GetMapping("/cart/{cartId}")
     public ResponseEntity<?> getCartByCartId(@PathVariable Long cartId) {
         ShoppingCart cart = cartService.findCartByCartId(cartId);
         if (cart != null) {
@@ -67,7 +82,7 @@ public class CartController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/by-user-id/{userId}")
+    @GetMapping("/cart/{userId}")
     public ResponseEntity<?> getCartByUserId(@PathVariable Long userId) {
         ShoppingCart cart = cartService.findCartByUserId(userId);
         if (cart != null) {

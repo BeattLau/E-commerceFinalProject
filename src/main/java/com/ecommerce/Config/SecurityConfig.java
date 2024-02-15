@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeRequests(request -> request
                         .requestMatchers("/api/v1/login", "/api/v1/register").permitAll()
                         .requestMatchers("/admin").hasAuthority("ADMIN")
-                        .requestMatchers("/users", "/user/save", "/user-login").hasAuthority("ADMIN")
+                        .requestMatchers("/users/all", "/users/save", "/users/user-login").hasAuthority("ADMIN")
                         .requestMatchers(
                                 "/api/v1/products/name/{name}", "/api/v1/products/id/{productId}", "/api/v1/products/all").permitAll()
                         .requestMatchers(
@@ -37,8 +37,8 @@ public class SecurityConfig {
                         .hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers("/products/all", "/products/{productName}", "/products/{productId}", "/products/add", "/products/update/{productId}", "/products/delete/{productId}").authenticated()
                         .requestMatchers("/api/v1/cart/contents", "/api/v1/cart/add/{productId}", "/api/v1/cart/delete/{productId}").authenticated()
-                        .requestMatchers("/orders/{userId}", "/api/v1/generate-from-cart", "/orders/{orderId}", "/order-history", "/orders/{orderId}").authenticated()
-                        .requestMatchers("/orders/{orderId}/status/{newStatus}").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/orders/{userId}", "/api/v1/orders/place-order-from-cart", "/api/v1/orders/{orderId}", "/api/v1/orders/order-history", "/api/v1/orders/{orderId}").authenticated()
+                        .requestMatchers("/api/v1/orders/{orderId}/status/{newStatus}", "/api/v1/order/all").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

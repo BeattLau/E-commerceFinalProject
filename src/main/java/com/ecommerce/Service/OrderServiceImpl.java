@@ -18,7 +18,7 @@ public class OrderServiceImpl implements OrderService{
     private UserService userService;
 
     @Override
-    public Order generateOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException {
+    public Order placeOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException {
         CustomUser authenticatedUser = userService.getCurrentUser();
 
         if (!authenticatedUser.equals(shoppingCart.getUser())) {
