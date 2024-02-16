@@ -6,6 +6,7 @@ import com.ecommerce.Entity.Products;
 import com.ecommerce.Entity.ShoppingCart;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
 import com.ecommerce.ExceptionHandler.UserNotFoundException;
+import com.ecommerce.Repository.CartItemsRepository;
 import com.ecommerce.Repository.CartRepository;
 import com.ecommerce.Repository.ProductRepository;
 import com.ecommerce.Repository.UserRepository;
@@ -18,10 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +37,8 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private CartRepository cartRepository;
+    private CartItemsRepository cartItemsRepository;
+    private CustomUser currentUser;
 
     private CustomUser getCurrentUser() throws UserNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -174,17 +174,26 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("User cannot be null");
         }
     }
-    @Override
+    @Transactional
     public void clearCart(CustomUser currentUser) {
-        if (currentUser != null) {
-            ShoppingCart shoppingCart = currentUser.getShoppingCart();
-            if (shoppingCart != null) {
-                shoppingCart.getCartItems().clear();
-                shoppingCart.setTotalPrice(0);
-                cartRepository.save(shoppingCart);
+        this.currentUser = currentUser;
+        ShoppingCart cart = currentUser.getShoppingCart();
+        if (cart != null && !cart.getCartItems().isEmpty()) {
+            // Remove purchased items from the cart and update total price
+            double totalPrice = 0.0;
+            Iterator<CartItems> iterator = cart.getCartItems().iterator();
+            while (iterator.hasNext()) {
+                CartItems cartItem = iterator.next();
+                if (cartItem.isPurchased()) {
+                    totalPrice += cartItem.getPrice() * cartItem.getQuantity();
+                    iterator.remove();
+                }
             }
-        } else {
-            throw new IllegalArgumentException("User cannot be null");
+            // Set total price and update the cart
+            cart.setTotalPrice(totalPrice);
+            cartRepository.save(cart);
+            // Optionally, delete purchased items from the database
+            cartItemsRepository.deletePurchasedItemsByCartId(cart.getCartId(), currentUser);
         }
     }
 }

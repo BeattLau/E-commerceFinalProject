@@ -30,7 +30,7 @@ public class CustomUser implements UserDetails {
     @Column(name = "permission")
     private Set<String> permissions;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ShoppingCart shoppingCart;
 
     @Override
