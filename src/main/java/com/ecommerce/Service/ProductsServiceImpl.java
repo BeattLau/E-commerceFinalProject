@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -59,7 +57,7 @@ public class ProductsServiceImpl implements ProductsService {
             return productRepository.findProductsByProductName(productName);
     }
     @Override
-    public Products getProductByProductId(String productId) {
+    public Products getProductByProductId(Long productId) {
         return productRepository.findProductsByProductId(Long.valueOf(productId));
     }
     public Page<Products> getAllProducts(Pageable pageable) {

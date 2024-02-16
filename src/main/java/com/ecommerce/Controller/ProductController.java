@@ -36,7 +36,7 @@ public class ProductController {
 
     @GetMapping("/products/id/{productId}")
     public ResponseEntity<Products> getProductById(@PathVariable Long productId) {
-        Products product = productsService.getProductByProductId(String.valueOf(productId));
+        Products product = productsService.getProductByProductId(productId);
         if (product != null) {
             return ResponseEntity.ok(product);
         } else {
@@ -66,7 +66,7 @@ public class ProductController {
             @PathVariable Long productId,
             @RequestBody ProductRequest productRequest) {
         try {
-            Products existingProduct = productsService.getProductByProductId(String.valueOf(productId));
+            Products existingProduct = productsService.getProductByProductId(productId);
             if (existingProduct == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class OrderServiceImpl implements OrderService{
     @Autowired
@@ -28,21 +31,39 @@ public class OrderServiceImpl implements OrderService{
         if (shoppingCart == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
             throw new IllegalArgumentException("Shopping cart is empty");
         }
+
         double totalValue = calculateTotalPrice(shoppingCart.getCartItems());
-        shoppingCart.getCartItems().forEach(item -> item.setPurchased(true));
+        List<CartItems> purchasedItems = shoppingCart.getCartItems().stream()
+                .filter(CartItems::isPurchased)
+                .collect(Collectors.toList());
+
         Order order = new Order();
         order.setUser(shoppingCart.getUser());
+        order.setPurchasedItems(createOrderedCartItems(purchasedItems));
         order.setTotalValue(totalValue);
         order.setStatus(OrderStatus.PENDING);
         order.setDate(new Date());
 
         orderRepository.save(order);
-        
+
+        shoppingCart.getCartItems().removeAll(purchasedItems);
         cartService.saveCart(shoppingCart);
 
         return order;
     }
-@Override
+
+    private List<OrderedCartItem> createOrderedCartItems(List<CartItems> cartItems) {
+        return cartItems.stream()
+                .map(cartItem -> {
+                    OrderedCartItem orderedCartItem = new OrderedCartItem();
+                    orderedCartItem.setCartItemId(cartItem.getCartItemsId());
+                    orderedCartItem.setProductName(cartItem.getProduct().getProductName());
+                    return orderedCartItem;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
 public double calculateTotalPrice(List<CartItems> items) {
         return items.stream()
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())

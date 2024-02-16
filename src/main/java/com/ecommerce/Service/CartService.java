@@ -6,15 +6,17 @@ import com.ecommerce.Entity.ShoppingCart;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
 import com.ecommerce.ExceptionHandler.ShoppingCartNotFoundException;
 import com.ecommerce.ExceptionHandler.UserNotFoundException;
+import com.ecommerce.Request.CartRequest;
+import com.ecommerce.Response.CartResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface CartService {
-    List<Products> getCartContents() throws UserNotFoundException;
+    public CartResponse getCartContents(CustomUser user);
 
-    List<Products> addProductToCart(Long productId, String username) throws UserNotFoundException, ProductNotFoundException;
+    public CartResponse addProductToCart(CartRequest cartRequest, CustomUser user) throws ProductNotFoundException;
 
     void deleteProductFromCart(String username, Long productId) throws ProductNotFoundException, UserNotFoundException, ShoppingCartNotFoundException;
 
