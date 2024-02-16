@@ -26,5 +26,11 @@ public class CartItems {
     private boolean purchased;
 
     @ManyToOne
-    private Order order;
+    @JoinColumn(name= "order_id")
+    private Order orderOrderId;
+
+    public CartItems setOrderOrderId(Order order) {
+        this.orderOrderId = orderOrderId;
+        return this;
+    }
 }

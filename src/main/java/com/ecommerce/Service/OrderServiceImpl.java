@@ -1,9 +1,11 @@
 package com.ecommerce.Service;
 
 import com.ecommerce.Entity.*;
+import com.ecommerce.Repository.CartItemsRepository;
 import com.ecommerce.Repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
@@ -11,14 +13,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-public class OrderServiceImpl implements OrderService{
+@Service @Transactional
+public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
     private CartService cartService;
     @Autowired
     private UserService userService;
+    private CartItemsRepository cartItemsRepository;
 
     @Override
     public Order placeOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException {
@@ -46,11 +49,17 @@ public class OrderServiceImpl implements OrderService{
 
         orderRepository.save(order);
 
-        shoppingCart.getCartItems().removeAll(purchasedItems);
-        cartService.saveCart(shoppingCart);
+        Long orderId = order.getOrderId();
 
+        for (CartItems cartItems : purchasedItems) {
+            cartItems.setOrderOrderId(order);
+        }
+
+        cartItemsRepository.saveAll(purchasedItems);
+        cartService.clearCart(authenticatedUser);
         return order;
     }
+
 
     private List<OrderedCartItem> createOrderedCartItems(List<CartItems> cartItems) {
         return cartItems.stream()

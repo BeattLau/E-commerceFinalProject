@@ -181,7 +181,7 @@ public class CartServiceImpl implements CartService {
             if (shoppingCart != null) {
                 shoppingCart.getCartItems().clear();
                 shoppingCart.setTotalPrice(0);
-                cartRepository.save(shoppingCart); // Save the shopping cart after clearing items
+                cartRepository.save(shoppingCart);
             }
         } else {
             throw new IllegalArgumentException("User cannot be null");
