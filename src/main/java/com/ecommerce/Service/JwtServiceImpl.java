@@ -1,12 +1,13 @@
 package com.ecommerce.Service;
 
-import com.ecommerce.Entity.CustomUser;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 @AllArgsConstructor @RequiredArgsConstructor
 @Service
 public class JwtServiceImpl implements JwtService {
+
     @Autowired
     private SecretKey secretKey;
 
@@ -43,7 +45,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
+          .compact();
     }
     public String generateToken(CustomUser customUser, Map<String, Object> extraClaims) {
         return generateToken(customUser, extraClaims, jwtExpiration);
@@ -67,11 +69,12 @@ public class JwtServiceImpl implements JwtService {
         final Claims claims = extractAllClaims(token);
         return claimsResolvers.apply(claims);
     }
-
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
+ Fix_auth_and_security
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
+
     }
 }
