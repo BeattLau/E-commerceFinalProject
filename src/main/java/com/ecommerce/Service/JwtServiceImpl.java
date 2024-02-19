@@ -38,17 +38,17 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(CustomUser customUser, Map<String, Object> extraClaims, Long jwtExpiration) {
+    public String generateToken(UserDetails userDetails, Map<String, Object> extraClaims, Long jwtExpiration) {
         return Jwts.builder()
-                .setSubject(customUser.getUsername())
+                .setSubject(userDetails.getUsername())
                 .addClaims(extraClaims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
           .compact();
     }
-    public String generateToken(CustomUser customUser, Map<String, Object> extraClaims) {
-        return generateToken(customUser, extraClaims, jwtExpiration);
+    public String generateToken(UserDetails userDetails, Map<String, Object> extraClaims) {
+        return generateToken(userDetails, extraClaims, jwtExpiration);
     }
 
     @Override
@@ -71,7 +71,6 @@ public class JwtServiceImpl implements JwtService {
     }
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
- Fix_auth_and_security
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();

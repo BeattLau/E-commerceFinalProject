@@ -37,26 +37,44 @@ public class OrderController {
     @PostMapping("/orders/place-order-from-cart")
     public ResponseEntity<?> placeOrderFromCart() {
         try {
+            // Step 1: Retrieve the current authenticated user
             CustomUser currentUser = userService.getCurrentUser();
             if (currentUser == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
+
+            // Step 2: Retrieve the shopping cart for the current user
             ShoppingCart shoppingCart = cartService.getCartForUser(currentUser);
 
+            // Step 3: Check if the shopping cart is empty
+            if (shoppingCart == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
+                return ResponseEntity.badRequest().body("Shopping cart is empty");
+            }
+
+            // Step 4: Create an Order object
             Order order = new Order();
             order.setUser(currentUser);
             order.setTotalValue(orderService.calculateTotalPrice(shoppingCart.getCartItems()));
             order.setStatus(OrderStatus.PENDING);
             order.setDate(new Date());
 
+            // Step 5: Save the Order object to the database
             orderService.placeOrder(order);
+
+            // Step 6: Update purchased items in the shopping cart
+            cartService.updateCartItemsWithOrder(shoppingCart, order);
+
+            // Step 7: Clear the shopping cart for the current user
             cartService.clearCart(currentUser);
 
+            // Step 8: Return success response
             return ResponseEntity.ok("Order placed successfully.");
         } catch (Exception e) {
+            // Step 9: Handle exceptions and return error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to place order");
         }
     }
+
     @PutMapping("/orders/{orderId}/status/{newStatus}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Order> updateOrderStatus(@PathVariable Long orderId, @PathVariable OrderStatus newStatus) {

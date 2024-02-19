@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtService jwtService;
+    private final UserService userService;
     private final MyUserDetailsService myUserDetailsService;
 
     @Override
@@ -49,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        String username = jwtService.extractUserName(jwt);
+        username = jwtService.extractUserName(jwt);
 
         if (StringUtils.isNotEmpty(username)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {

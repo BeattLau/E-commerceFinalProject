@@ -1,9 +1,6 @@
 package com.ecommerce.Service;
 
-import com.ecommerce.Entity.CartItems;
-import com.ecommerce.Entity.CustomUser;
-import com.ecommerce.Entity.Products;
-import com.ecommerce.Entity.ShoppingCart;
+import com.ecommerce.Entity.*;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
 import com.ecommerce.ExceptionHandler.UserNotFoundException;
 import com.ecommerce.Repository.CartItemsRepository;
@@ -196,4 +193,18 @@ public class CartServiceImpl implements CartService {
             cartItemsRepository.deletePurchasedItemsByCartId(cart.getCartId(), currentUser);
         }
     }
-}
+
+        public void updateCartItemsWithOrder(ShoppingCart shoppingCart, Order order) {
+            List<CartItems> cartItems = shoppingCart.getCartItems();
+
+            // Iterate through each cart item and update its association with the order
+            for (CartItems cartItem : cartItems) {
+                // Set the order for the cart item
+                cartItem.setOrderOrderId(order);
+                // Optionally, you can mark the cart item as purchased or update any other relevant information
+
+                // Save the updated cart item to the database
+                cartItemsRepository.save(cartItem);
+            }
+        }
+    }

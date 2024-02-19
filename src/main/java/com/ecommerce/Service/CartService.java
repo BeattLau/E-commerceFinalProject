@@ -1,6 +1,7 @@
 package com.ecommerce.Service;
 
 import com.ecommerce.Entity.CustomUser;
+import com.ecommerce.Entity.Order;
 import com.ecommerce.Entity.Products;
 import com.ecommerce.Entity.ShoppingCart;
 import com.ecommerce.ExceptionHandler.ProductNotFoundException;
@@ -28,6 +29,7 @@ public interface CartService {
     ShoppingCart getCartForUser(CustomUser currentUser);
 
     void clearCart(CustomUser currentUser);
+    public void updateCartItemsWithOrder(ShoppingCart shoppingCart, Order order);
 }
 
 
