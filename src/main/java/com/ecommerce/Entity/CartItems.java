@@ -10,16 +10,27 @@ import lombok.Setter;
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class CartItems {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long cartItemsId;
+
     @ManyToOne
-    @JoinColumn(name="cartId", nullable=false)
+    @JoinColumn(name = "cart_id", nullable = false)
     private ShoppingCart shoppingCart;
+
     @ManyToOne
-    private Products products;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Products product;
+
     private int quantity;
     private double price;
     private boolean purchased;
+
     @ManyToOne
-    private Order order;
+    @JoinColumn(name= "order_id")
+    private Order orderOrderId;
+
+    public CartItems setOrderOrderId(Order order) {
+        this.orderOrderId = orderOrderId;
+        return this;
+    }
 }
