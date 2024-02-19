@@ -1,6 +1,5 @@
 package com.ecommerce.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +23,5 @@ public class Products {
     private int quantity;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<CartItems> shoppingCarts = new ArrayList<>();
+    private List<ShoppingCart> shoppingCarts = new ArrayList<>();
 }

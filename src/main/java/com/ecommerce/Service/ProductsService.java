@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface ProductsService {
     Products addProducts(Products products);
@@ -14,7 +16,7 @@ public interface ProductsService {
     void deleteProducts(Long productId) throws ProductNotFoundException;
 
     Products getProductByProductName(String productName);
-    Products getProductByProductId(Long productId);
+    Products getProductByProductId(String productId);
 
     Page<Products> getAllProducts(Pageable pageable);
 

@@ -1,79 +1,56 @@
 package com.ecommerce.Service;
 
 import com.ecommerce.Entity.*;
-import com.ecommerce.Repository.CartItemsRepository;
 import com.ecommerce.Repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
-@Service @Transactional
-public class OrderServiceImpl implements OrderService {
+@Service
+public class OrderServiceImpl implements OrderService{
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
     private CartService cartService;
     @Autowired
     private UserService userService;
-    private CartItemsRepository cartItemsRepository;
 
     @Override
-    public Order placeOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException {
+    public List<Order> getUserOrders(Long userId) throws AccessDeniedException {
         CustomUser authenticatedUser = userService.getCurrentUser();
 
-        if (!authenticatedUser.equals(shoppingCart.getUser())) {
+        if (authenticatedUser.getUserId().equals(userId)) {
+            return (List<Order>) orderRepository.findOrderByUser_UserId(userId);
+        } else {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
-
-        if (shoppingCart == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
-            throw new IllegalArgumentException("Shopping cart is empty");
+    }
+    @Override
+    public Order convertCartToOrder(ShoppingCart shoppingCart) {
+        if (shoppingCart == null || shoppingCart.getUser() == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
+            return null;
         }
+        double totalValue = shoppingCart.getCartItems().stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
 
-        double totalValue = calculateTotalPrice(shoppingCart.getCartItems());
-        List<CartItems> purchasedItems = shoppingCart.getCartItems().stream()
-                .filter(CartItems::isPurchased)
-                .collect(Collectors.toList());
+        shoppingCart.getCartItems().forEach(item -> item.setPurchased(true));
 
         Order order = new Order();
         order.setUser(shoppingCart.getUser());
-        order.setPurchasedItems(createOrderedCartItems(purchasedItems));
         order.setTotalValue(totalValue);
         order.setStatus(OrderStatus.PENDING);
-        order.setDate(new Date());
 
         orderRepository.save(order);
 
-        Long orderId = order.getOrderId();
+        cartService.saveCart(shoppingCart);
 
-        for (CartItems cartItems : purchasedItems) {
-            cartItems.setOrderOrderId(order);
-        }
-
-        cartItemsRepository.saveAll(purchasedItems);
-        cartService.clearCart(authenticatedUser);
         return order;
     }
-
-
-    private List<OrderedCartItem> createOrderedCartItems(List<CartItems> cartItems) {
-        return cartItems.stream()
-                .map(cartItem -> {
-                    OrderedCartItem orderedCartItem = new OrderedCartItem();
-                    orderedCartItem.setCartItemId(cartItem.getCartItemsId());
-                    orderedCartItem.setProductName(cartItem.getProduct().getProductName());
-                    return orderedCartItem;
-                })
-                .collect(Collectors.toList());
-    }
-
     @Override
-public double calculateTotalPrice(List<CartItems> items) {
+    public double calculateTotalValue(List<CartItems> items) {
         return items.stream()
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())
                 .sum();

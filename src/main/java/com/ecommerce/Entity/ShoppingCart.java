@@ -1,14 +1,15 @@
 package com.ecommerce.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Entity
-@Table(name = "shopping_cart")
+@Table(name="shopping_cart")
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class ShoppingCart {
@@ -16,24 +17,22 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cartId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private CustomUser user;
 
-    private int quantity;
-    private double totalPrice;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Products product;
 
+    private int quantity;
+    private double totalValue;
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     private List<CartItems> cartItems;
 
-    public void calculateTotalPrice() {
-        if (cartItems != null) {
-            double totalPrice = 0.0;
-            for (CartItems cartItem : cartItems) {
-                totalPrice += cartItem.getPrice();
-            }
-            this.totalPrice = totalPrice;
+    public void calculateTotalValue() {
+        if (product != null) {
+            this.totalValue = product.getPrice() * quantity;
         }
     }
 }

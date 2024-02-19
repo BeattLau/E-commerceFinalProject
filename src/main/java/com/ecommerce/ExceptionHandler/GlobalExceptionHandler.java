@@ -47,10 +47,4 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(exception.getMessage());
     }
-    @ExceptionHandler({ShoppingCartNotFoundException.class})
-    public ResponseEntity<Object> handleShoppingCartNotFoundException(ShoppingCartNotFoundException exception) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(exception.getMessage());
-    }
 }

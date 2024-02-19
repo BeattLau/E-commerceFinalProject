@@ -25,13 +25,13 @@ public class CustomUser implements UserDetails {
 
     private String password;
 
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = String.class)
     @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "permission")
     private Set<String> permissions;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private ShoppingCart shoppingCart;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<ShoppingCart> shoppingCart = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

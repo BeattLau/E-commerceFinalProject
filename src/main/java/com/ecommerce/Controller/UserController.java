@@ -34,15 +34,15 @@ public class UserController {
     @Autowired
     private JwtServiceImpl jwtUtil;
     @Autowired
-   private AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
-    @GetMapping("/users/all")
+    @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<CustomUser>> getUsers() {
         return ResponseEntity.ok().body(userServiceImpl.getUsers());
     }
 
-    @PostMapping("/users/save")
+    @PostMapping("/user/save")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CustomUser> saveUser(@RequestBody CustomUser user) {
         CustomUser savedUser = userServiceImpl.saveUser(user);
@@ -54,7 +54,7 @@ public class UserController {
         return ResponseEntity.created(location).body(savedUser);
     }
 
-    @PostMapping("/users/user-login")
+    @PostMapping("/user-login")
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -76,6 +76,5 @@ public class UserController {
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authentication failed"));
         }
-
     }
 }
