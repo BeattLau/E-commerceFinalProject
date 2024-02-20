@@ -4,6 +4,7 @@ import com.ecommerce.Entity.CustomUser;
 import com.ecommerce.Entity.Order;
 import com.ecommerce.Entity.OrderStatus;
 import com.ecommerce.Entity.ShoppingCart;
+import com.ecommerce.ExceptionHandler.OrderPlacementException;
 import com.ecommerce.Repository.CartItemsRepository;
 import com.ecommerce.Repository.CartRepository;
 import com.ecommerce.Repository.OrderRepository;
@@ -56,29 +57,26 @@ public class OrderController {
                 return ResponseEntity.badRequest().body("Shopping cart is empty");
             }
 
-            // Step 4: Create an Order object
-            Order order = new Order();
-            order.setUser(currentUser);
-            order.setTotalValue(orderService.calculateTotalPrice(shoppingCart.getCartItems()));
-            order.setStatus(OrderStatus.PENDING);
-            order.setDate(new Date());
+            // Step 4: Place the order directly using the service method
+            Order order = orderService.placeOrderFromCart(shoppingCart);
 
-            // Step 5: Save the Order object to the database
-            orderService.placeOrder(order);
-
-            // Step 6: Update purchased items in the shopping cart
+            // Step 5: Update purchased items in the shopping cart
             cartService.updateCartItemsWithOrder(shoppingCart, order);
 
-            // Step 7: Clear the shopping cart for the current user
+            // Step 6: Clear the shopping cart for the current user
             cartService.clearCart(currentUser);
 
-            // Step 8: Return success response
+            // Step 7: Return success response
             return ResponseEntity.ok("Order placed successfully.");
+        } catch (OrderPlacementException e) {
+            // Step 8: Handle OrderPlacementException and return error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to place order: " + e.getMessage());
         } catch (Exception e) {
-            // Step 9: Handle exceptions and return error response
+            // Step 9: Handle other exceptions and return error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to place order");
         }
     }
+
     @PutMapping("/orders/{orderId}/status/{newStatus}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Order> updateOrderStatus(@PathVariable Long orderId, @PathVariable OrderStatus newStatus) {

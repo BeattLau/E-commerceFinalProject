@@ -1,6 +1,7 @@
 package com.ecommerce.Service;
 
 import com.ecommerce.Entity.*;
+import com.ecommerce.ExceptionHandler.OrderPlacementException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Service
 public interface OrderService {
-    Order placeOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException;
+    Order placeOrderFromCart(ShoppingCart shoppingCart) throws OrderPlacementException;
     double calculateTotalPrice(List<CartItems> items);
     List<Order> getAllOrders();
     Order getOrderById(Long orderId);

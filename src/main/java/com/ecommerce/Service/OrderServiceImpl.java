@@ -1,6 +1,7 @@
 package com.ecommerce.Service;
 
 import com.ecommerce.Entity.*;
+import com.ecommerce.ExceptionHandler.OrderPlacementException;
 import com.ecommerce.Repository.CartItemsRepository;
 import com.ecommerce.Repository.OrderRepository;
 import lombok.AllArgsConstructor;
@@ -21,40 +22,45 @@ public class OrderServiceImpl implements OrderService {
     private CartService cartService;
     private UserService userService;
     @Override
-    public Order placeOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException {
-        CustomUser authenticatedUser = userService.getCurrentUser();
+    public Order placeOrderFromCart(ShoppingCart shoppingCart) throws OrderPlacementException {
+        try {
+            CustomUser authenticatedUser = userService.getCurrentUser();
 
-        if (!authenticatedUser.equals(shoppingCart.getUser())) {
-            throw new AccessDeniedException("You do not have permission to access this resource");
+            if (!authenticatedUser.equals(shoppingCart.getUser())) {
+                throw new AccessDeniedException("You do not have permission to access this resource");
+            }
+
+            if (shoppingCart == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
+                throw new IllegalArgumentException("Shopping cart is empty");
+            }
+
+            double totalValue = calculateTotalPrice(shoppingCart.getCartItems());
+            List<CartItems> purchasedItems = shoppingCart.getCartItems().stream()
+                    .filter(CartItems::isPurchased)
+                    .collect(Collectors.toList());
+
+            Order order = new Order();
+            order.setUser(shoppingCart.getUser());
+            order.setPurchasedItems(createOrderedCartItems(purchasedItems));
+            order.setTotalValue(totalValue);
+            order.setStatus(OrderStatus.PENDING);
+            order.setDate(new Date());
+
+            orderRepository.save(order); // Save the order to get the order_id
+
+// Set the order_id for each CartItems entity
+            for (CartItems cartItems : purchasedItems) {
+                cartItems.setOrderOrderId(order); // Assuming there's a setOrder method in CartItems class
+            }
+
+            cartItemsRepository.saveAll(purchasedItems); // Save all CartItems entities with updated order_id
+
+            cartService.clearCart(authenticatedUser);
+
+            return order;
+        } catch (Exception e) {
+            throw new OrderPlacementException("Failed to place order", e);
         }
-
-        if (shoppingCart == null || shoppingCart.getCartItems() == null || shoppingCart.getCartItems().isEmpty()) {
-            throw new IllegalArgumentException("Shopping cart is empty");
-        }
-
-        double totalValue = calculateTotalPrice(shoppingCart.getCartItems());
-        List<CartItems> purchasedItems = shoppingCart.getCartItems().stream()
-                .filter(CartItems::isPurchased)
-                .collect(Collectors.toList());
-
-        Order order = new Order();
-        order.setUser(shoppingCart.getUser());
-        order.setPurchasedItems(createOrderedCartItems(purchasedItems));
-        order.setTotalValue(totalValue);
-        order.setStatus(OrderStatus.PENDING);
-        order.setDate(new Date());
-
-        orderRepository.save(order);
-
-        Long orderId = order.getOrderId();
-
-        for (CartItems cartItems : purchasedItems) {
-            cartItems.setOrderOrderId(order);
-        }
-
-        cartItemsRepository.saveAll(purchasedItems);
-        cartService.clearCart(authenticatedUser);
-        return order;
     }
 
 

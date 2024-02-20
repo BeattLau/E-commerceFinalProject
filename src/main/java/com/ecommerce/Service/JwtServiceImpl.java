@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,10 +28,10 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
 
-
     public JwtServiceImpl(@Value("${token.signing.key}") String jwtSigningKey) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSigningKey.getBytes());
     }
+
 
     @Override
     public String extractUserName(String token) {
@@ -45,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
-          .compact();
+                .compact();
     }
     public String generateToken(UserDetails userDetails, Map<String, Object> extraClaims) {
         return generateToken(userDetails, extraClaims, jwtExpiration);
@@ -70,10 +71,15 @@ public class JwtServiceImpl implements JwtService {
         return claimsResolvers.apply(claims);
     }
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (SignatureException e) {
+            // Handle the signature exception (e.g., log the error)
+            throw new RuntimeException("Invalid JWT signature");
+        }
     }
+
 }
