@@ -2,6 +2,7 @@ package com.ecommerce.Entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,6 +13,7 @@ import java.util.*;
 @Table(name = "users")
 @Getter
 @Setter
+@NoArgsConstructor
 public class CustomUser implements UserDetails {
 
     @Id
@@ -32,6 +34,7 @@ public class CustomUser implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ShoppingCart shoppingCart;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -10,5 +10,6 @@ import lombok.Setter;
 @Setter
 public class OrderedCartItem {
     private Long cartItemId;
+    private Long productId;
     private String productName;
 }

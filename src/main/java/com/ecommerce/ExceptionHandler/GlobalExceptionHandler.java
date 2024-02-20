@@ -53,4 +53,16 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(exception.getMessage());
     }
+    @ExceptionHandler({OrderPlacementException.class})
+    public ResponseEntity<Object> handleOrderPlacementException(OrderPlacementException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
+    @ExceptionHandler({OrderCreationException.class})
+    public ResponseEntity<Object> handleOrderCreationException(OrderCreationException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
 }

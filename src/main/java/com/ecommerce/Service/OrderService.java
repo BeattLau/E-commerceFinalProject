@@ -17,7 +17,7 @@ public interface OrderService {
     Order saveOrder(Order order);
     void deleteOrder(Long orderId);
     Order updateOrderStatus(Long orderId, OrderStatus newStatus);
-    void placeOrder(Order order);
+    Order placeOrder(Order order);
     void validateOrder(Order order);
 
     List<Order> getOrderHistoryForUser(CustomUser currentUser);

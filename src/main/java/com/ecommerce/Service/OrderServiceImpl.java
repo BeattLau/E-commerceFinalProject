@@ -3,26 +3,23 @@ package com.ecommerce.Service;
 import com.ecommerce.Entity.*;
 import com.ecommerce.Repository.CartItemsRepository;
 import com.ecommerce.Repository.OrderRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service @Transactional
+@Service @Transactional @AllArgsConstructor
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
-    @Autowired
-    private CartService cartService;
-    @Autowired
-    private UserService userService;
     private CartItemsRepository cartItemsRepository;
-
+    private CartService cartService;
+    private UserService userService;
     @Override
     public Order placeOrderFromCart(ShoppingCart shoppingCart) throws AccessDeniedException {
         CustomUser authenticatedUser = userService.getCurrentUser();
@@ -108,10 +105,11 @@ public double calculateTotalPrice(List<CartItems> items) {
         return orderRepository.save(order);
     }
     @Override
-    public void placeOrder(Order order) {
+    public Order placeOrder(Order order) {
         validateOrder(order);
         orderRepository.save(order);
 
+        return order;
     }
     @Override
     public void validateOrder(Order order) {

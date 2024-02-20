@@ -4,6 +4,11 @@ import com.ecommerce.Entity.CustomUser;
 import com.ecommerce.Entity.Order;
 import com.ecommerce.Entity.OrderStatus;
 import com.ecommerce.Entity.ShoppingCart;
+import com.ecommerce.Repository.CartItemsRepository;
+import com.ecommerce.Repository.CartRepository;
+import com.ecommerce.Repository.OrderRepository;
+import com.ecommerce.Repository.UserRepository;
+import com.ecommerce.Response.OrderResponse;
 import com.ecommerce.Service.CartService;
 import com.ecommerce.Service.OrderService;
 import com.ecommerce.Service.UserService;
@@ -13,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +38,7 @@ public class OrderController {
     public ResponseEntity<List<Order>> getOrders() {
         return ResponseEntity.ok().body(orderService.getAllOrders());
     }
+
     @PostMapping("/orders/place-order-from-cart")
     public ResponseEntity<?> placeOrderFromCart() {
         try {
@@ -74,7 +79,6 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to place order");
         }
     }
-
     @PutMapping("/orders/{orderId}/status/{newStatus}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Order> updateOrderStatus(@PathVariable Long orderId, @PathVariable OrderStatus newStatus) {
